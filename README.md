@@ -1,4 +1,4 @@
-# TL QR Check-in 1.0.0
+# TL QR Check-in 1.1.0
 
 Lightweight Elementor widget untuk menampilkan QR Check-in tamu dari URL yang sedang dibuka.
 
@@ -21,6 +21,20 @@ Lightweight Elementor widget untuk menampilkan QR Check-in tamu dari URL yang se
 4. Cari kategori **TL Invitation** lalu drag widget **TL QR Check-in**.
 5. Atur dynamic tag pada field undangan sesuai data website Anda.
 
+### Instalasi pertama versi dengan updater
+
+Versi `1.0.0` belum memiliki kode updater. Karena itu, upgrade pertama ke `1.1.0` harus dilakukan satu kali secara manual melalui **Plugins > Add New > Upload Plugin** dan mengganti versi lama saat diminta WordPress.
+
+Setelah `1.1.0` terpasang, pembaruan stabil berikutnya dapat muncul di halaman **Dashboard > Updates** dan **Plugins** ketika tersedia sebagai GitHub Release dengan aset bernama tepat `tl-qr-checkin.zip`.
+
+Updater:
+
+- hanya memeriksa repository publik `rianhendri/tl-qr-checkin`;
+- hanya menerima release yang sudah dipublikasikan, bukan draft atau prerelease;
+- tidak memakai token GitHub dan tidak mengaktifkan auto-update secara paksa;
+- gagal dengan aman tanpa mengganggu widget jika GitHub tidak tersedia;
+- tidak berjalan atau membuat request jaringan dari frontend pengunjung.
+
 ## Dynamic content Elementor
 
 Field berikut mendukung Elementor Dynamic Tags:
@@ -37,6 +51,12 @@ Field berikut mendukung Elementor Dynamic Tags:
 - Logo Cincin / Logo Brand
 - Powered By
 - Nama Tamu Fallback
+
+## Posisi foto mempelai
+
+Foto mempelai selalu ditampilkan dengan mode `cover`. Kontrol **Posisi Foto** menyediakan sembilan titik fokus dari kiri atas sampai kanan bawah, dengan default **Tengah (`center center`)**.
+
+Posisi yang dipilih digunakan secara konsisten pada kartu di halaman dan pada hasil download PNG 1080 × 1920.
 
 ## Parameter URL tamu
 
@@ -75,13 +95,14 @@ Untuk memasukkan foto/logo dari domain lain ke PNG, CDN harus mengizinkan CORS u
 
 ## Runtime files
 
-Plugin hanya memiliki 6 file runtime utama:
+Plugin memiliki 7 file runtime utama:
 
 1. `tl-qr-checkin.php`
-2. `includes/class-tl-qr-checkin-widget.php`
-3. `templates/qr-checkin.php`
-4. `assets/css/tl-qr-checkin.css`
-5. `assets/js/tl-qr-checkin.js`
-6. `assets/vendor/qrcode/qrcode.browser.js`
+2. `includes/class-tl-qr-checkin-updater.php`
+3. `includes/class-tl-qr-checkin-widget.php`
+4. `templates/qr-checkin.php`
+5. `assets/css/tl-qr-checkin.css`
+6. `assets/js/tl-qr-checkin.js`
+7. `assets/vendor/qrcode/qrcode.browser.js`
 
 File lain hanya dokumentasi/lisensi.

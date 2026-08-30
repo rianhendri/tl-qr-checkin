@@ -60,6 +60,30 @@ class TL_QR_Checkin_Widget extends \Elementor\Widget_Base {
         );
 
         $this->add_control(
+            'hero_image_position',
+            [
+                'label'       => esc_html__( 'Posisi Foto', 'tl-qr-checkin' ),
+                'type'        => \Elementor\Controls_Manager::SELECT,
+                'default'     => 'center center',
+                'options'     => [
+                    'left top'      => esc_html__( 'Kiri Atas', 'tl-qr-checkin' ),
+                    'center top'    => esc_html__( 'Tengah Atas', 'tl-qr-checkin' ),
+                    'right top'     => esc_html__( 'Kanan Atas', 'tl-qr-checkin' ),
+                    'left center'   => esc_html__( 'Kiri Tengah', 'tl-qr-checkin' ),
+                    'center center' => esc_html__( 'Tengah (Default)', 'tl-qr-checkin' ),
+                    'right center'  => esc_html__( 'Kanan Tengah', 'tl-qr-checkin' ),
+                    'left bottom'   => esc_html__( 'Kiri Bawah', 'tl-qr-checkin' ),
+                    'center bottom' => esc_html__( 'Tengah Bawah', 'tl-qr-checkin' ),
+                    'right bottom'  => esc_html__( 'Kanan Bawah', 'tl-qr-checkin' ),
+                ],
+                'description' => esc_html__( 'Foto selalu memakai mode cover. Default: center center.', 'tl-qr-checkin' ),
+                'selectors'   => [
+                    '{{WRAPPER}} .tlqr-widget' => '--tlqr-hero-position: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
             'wedding_title',
             [
                 'label'       => esc_html__( 'The Wedding Of', 'tl-qr-checkin' ),
@@ -353,11 +377,27 @@ class TL_QR_Checkin_Widget extends \Elementor\Widget_Base {
             $logo_url = esc_url_raw( $settings['ring_logo']['url'] );
         }
 
+        $hero_positions = [
+            'left top',
+            'center top',
+            'right top',
+            'left center',
+            'center center',
+            'right center',
+            'left bottom',
+            'center bottom',
+            'right bottom',
+        ];
+        $hero_position = in_array( $settings['hero_image_position'] ?? '', $hero_positions, true )
+            ? $settings['hero_image_position']
+            : 'center center';
+
         $view = [
             'id'             => 'tlqr-' . $this->get_id(),
             'trigger_mode'   => in_array( $settings['trigger_mode'] ?? '', [ 'fixed', 'inline' ], true ) ? $settings['trigger_mode'] : 'fixed',
             'trigger_label'  => $clean( $settings['trigger_label'] ?? 'Buka QR Check-in' ),
             'hero_url'       => $hero_url,
+            'hero_position'  => $hero_position,
             'wedding_title'  => $clean( $settings['wedding_title'] ?? 'THE WEDDING OF' ),
             'couple_name'    => $couple_name,
             'subtitle_text'  => $clean( $settings['subtitle_text'] ?? '' ),

@@ -119,12 +119,29 @@
         return lines.length;
     }
 
-    function drawCoverImage(ctx, img, x, y, w, h, radius) {
+    function coverPosition(value) {
+        var positions = {
+            'left top': [0, 0],
+            'center top': [.5, 0],
+            'right top': [1, 0],
+            'left center': [0, .5],
+            'center center': [.5, .5],
+            'right center': [1, .5],
+            'left bottom': [0, 1],
+            'center bottom': [.5, 1],
+            'right bottom': [1, 1]
+        };
+
+        return positions[value] || positions['center center'];
+    }
+
+    function drawCoverImage(ctx, img, x, y, w, h, radius, position) {
         var scale = Math.max(w / img.naturalWidth, h / img.naturalHeight);
         var sw = w / scale;
         var sh = h / scale;
-        var sx = (img.naturalWidth - sw) / 2;
-        var sy = (img.naturalHeight - sh) / 2;
+        var anchor = coverPosition(position);
+        var sx = (img.naturalWidth - sw) * anchor[0];
+        var sy = (img.naturalHeight - sh) * anchor[1];
 
         ctx.save();
         roundedRectPath(ctx, x, y, w, h, radius);
@@ -448,6 +465,7 @@
             notes: textOf(this.root, '[data-tlqr-notes]'),
             poweredBy: textOf(this.root, '.tlqr-powered strong'),
             heroUrl: this.root.dataset.heroUrl || '',
+            heroPosition: this.root.dataset.heroPosition || 'center center',
             logoUrl: this.root.dataset.logoUrl || ''
         };
     };
@@ -488,7 +506,7 @@
         var heroX = margin, heroY = 60, heroW = cardW, heroH = 650, heroR = 34;
         fillRoundedRect(ctx, heroX, heroY, heroW, heroH, heroR, '#202020');
         if (hero) {
-            drawCoverImage(ctx, hero, heroX, heroY, heroW, heroH, heroR);
+            drawCoverImage(ctx, hero, heroX, heroY, heroW, heroH, heroR, data.heroPosition);
         } else {
             var fallbackGradient = ctx.createLinearGradient(heroX, heroY, heroX + heroW, heroY + heroH);
             fallbackGradient.addColorStop(0, '#3b3b3b');

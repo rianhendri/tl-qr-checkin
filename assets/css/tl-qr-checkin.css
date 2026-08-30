@@ -7,6 +7,7 @@
     --tlqr-sheet: #f7f7f6;
     --tlqr-trigger-top: 22px;
     --tlqr-trigger-right: 18px;
+    --tlqr-hero-position: center center;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: var(--tlqr-text);
 }
@@ -191,6 +192,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: var(--tlqr-hero-position);
     display: block;
 }
 

@@ -15,6 +15,8 @@ Kode plugin tidak menggunakan operasi database write WordPress seperti:
 
 Plugin juga tidak membuat AJAX/REST write endpoint, cron job, server-side QR image, atau log file.
 
+WordPress core dapat menyimpan cache hasil pemeriksaan update di site transient seperti plugin lain. TL QR Check-in tidak membuat option atau transient khusus miliknya sendiri.
+
 ## Client-side security
 
 - Query parameter dimasukkan ke DOM menggunakan `textContent`, bukan HTML injection.
@@ -23,6 +25,15 @@ Plugin juga tidak membuat AJAX/REST write endpoint, cron job, server-side QR ima
 - QR dibuat setelah user membuka popup sehingga pekerjaan CPU tidak terjadi pada initial page load.
 - PNG dibuat dengan native Canvas API; tidak memakai `html2canvas` atau library screenshot tambahan.
 - Tidak ada `eval`, `new Function`, remote executable script, analytics, tracking, atau external QR API.
+
+## GitHub updater
+
+- Pemeriksaan update hanya menggunakan WordPress HTTP API menuju endpoint HTTPS tetap `api.github.com/repos/rianhendri/tl-qr-checkin/releases/latest`.
+- Request menggunakan timeout 5 detik, maksimal 2 redirect, verifikasi TLS, batas respons 1 MiB, dan User-Agent plugin yang tidak berisi domain website.
+- Updater tidak mengirim URL undangan, nama tamu, parameter check-in, domain website, telemetry, atau token GitHub.
+- Hanya release stabil yang sudah dipublikasikan dengan tag Semantic Version dan aset tepat `tl-qr-checkin.zip` dari repository yang dikonfigurasi yang dapat ditawarkan.
+- Draft, prerelease, respons rusak, versi lama/sama, URL repository lain, aset hilang, HTTP error, dan timeout diabaikan secara fail-closed.
+- GitHub hanya digunakan untuk pemeriksaan update administratif WordPress. Frontend, QR, dan PNG tetap bekerja tanpa GitHub dan tidak membuat request updater.
 
 ## QR engine
 
@@ -34,4 +45,4 @@ SHA-256 bundle QR dicatat pada `CHECKSUMS.txt`.
 
 ## Important limitation
 
-Tidak ada proses audit yang dapat menjamin secara absolut bahwa software bebas dari semua bug atau future vulnerability. Build ini sengaja meminimalkan supply-chain surface: satu engine QR lokal, CSS custom, JavaScript custom, dan tanpa network dependency runtime.
+Tidak ada proses audit yang dapat menjamin secara absolut bahwa software bebas dari semua bug atau future vulnerability. Build ini sengaja meminimalkan supply-chain surface: satu engine QR lokal, CSS custom, JavaScript custom, tanpa dependency jaringan frontend, serta satu pemeriksaan administratif terbatas ke GitHub untuk update.

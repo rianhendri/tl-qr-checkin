@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     data-guest-fallback="<?php echo esc_attr( $view['guest_fallback'] ); ?>"
     data-editor-preview="<?php echo $view['is_editor'] ? '1' : '0'; ?>"
     data-hero-url="<?php echo esc_url( $view['hero_url'] ); ?>"
+    data-hero-position="<?php echo esc_attr( $view['hero_position'] ); ?>"
     data-logo-url="<?php echo esc_url( $view['logo_url'] ); ?>"
 >
     <button class="tlqr-trigger" type="button" aria-label="<?php echo esc_attr( $view['trigger_label'] ); ?>" aria-haspopup="dialog" aria-expanded="false">
