@@ -7,6 +7,15 @@
     --tlqr-sheet: #f7f7f6;
     --tlqr-trigger-top: 22px;
     --tlqr-trigger-right: 18px;
+    --tlqr-trigger-size: 42px;
+    --tlqr-trigger-icon-size: 21px;
+    --tlqr-trigger-radius: 12px;
+    --tlqr-trigger-color: #171717;
+    --tlqr-trigger-background: #ffffff;
+    --tlqr-trigger-border: #e8e8e8;
+    --tlqr-trigger-hover-color: #ffffff;
+    --tlqr-trigger-hover-background: #b89a67;
+    --tlqr-trigger-hover-border: #b89a67;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: var(--tlqr-text);
 }
@@ -17,34 +26,53 @@
     box-sizing: border-box;
 }
 
-.tlqr-trigger {
-    width: 42px;
-    height: 42px;
-    border: 1px solid rgba(23, 23, 23, .08);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, .94);
-    color: var(--tlqr-text);
+.tlqr-widget > .tlqr-trigger {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    width: var(--tlqr-trigger-size) !important;
+    height: var(--tlqr-trigger-size) !important;
+    min-width: var(--tlqr-trigger-size) !important;
+    min-height: var(--tlqr-trigger-size) !important;
+    border: 1px solid var(--tlqr-trigger-border) !important;
+    border-radius: var(--tlqr-trigger-radius) !important;
+    background: var(--tlqr-trigger-background) !important;
+    color: var(--tlqr-trigger-color) !important;
     display: inline-grid;
     place-items: center;
-    padding: 0;
+    padding: 0 !important;
     cursor: pointer;
     box-shadow: 0 8px 24px rgba(0, 0, 0, .10);
+    filter: none !important;
+    transform: none !important;
     -webkit-tap-highlight-color: transparent;
-    transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease;
+    transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease, color .2s ease, border-color .2s ease;
 }
 
-.tlqr-trigger:hover,
-.tlqr-trigger:focus-visible {
-    transform: translateY(-1px);
+.tlqr-widget > .tlqr-trigger:hover,
+.tlqr-widget > .tlqr-trigger:focus,
+.tlqr-widget > .tlqr-trigger:focus-visible,
+.tlqr-widget > .tlqr-trigger:active {
+    border-color: var(--tlqr-trigger-hover-border) !important;
+    background: var(--tlqr-trigger-hover-background) !important;
+    color: var(--tlqr-trigger-hover-color) !important;
+    transform: translateY(-1px) !important;
     box-shadow: 0 10px 28px rgba(0, 0, 0, .14);
-    background: #fff;
-    outline: none;
+    filter: none !important;
+    outline: none !important;
 }
 
-.tlqr-trigger svg {
-    width: 21px;
-    height: 21px;
-    fill: currentColor;
+.tlqr-widget > .tlqr-trigger::before,
+.tlqr-widget > .tlqr-trigger::after {
+    content: none !important;
+    display: none !important;
+}
+
+.tlqr-widget > .tlqr-trigger svg {
+    width: var(--tlqr-trigger-icon-size) !important;
+    height: var(--tlqr-trigger-icon-size) !important;
+    fill: currentColor !important;
+    color: inherit !important;
+    pointer-events: none;
 }
 
 .tlqr-trigger--fixed > .tlqr-trigger {
@@ -93,8 +121,7 @@
     color: transparent !important;
     box-shadow: none !important;
     filter: none !important;
-    transform: none;
-    transform-origin: center center;
+    transform: none !important;
     outline: none !important;
 }
 
@@ -215,7 +242,8 @@
     max-width: none !important;
     object-fit: cover;
     object-position: center center;
-    transform: none !important;
+    transform: none;
+    transform-origin: center center;
     display: block;
 }
 

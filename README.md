@@ -1,4 +1,4 @@
-# TL QR Check-in 1.2.0
+# TL QR Check-in 1.3.0
 
 Lightweight Elementor widget untuk menampilkan QR Check-in tamu dari URL yang sedang dibuka.
 
@@ -76,6 +76,12 @@ Tab **Style** Elementor menyediakan kontrol warna dan Typography (termasuk font 
 - teks Powered By.
 
 Font family, ukuran, weight, style, transform, dan warna yang didukung Canvas ikut diterapkan pada PNG. Browser memakai fallback font jika Custom Font belum berhasil dimuat saat download.
+
+## Style tombol QR
+
+Bagian **Style > Tombol QR** menyediakan pengaturan responsif untuk ukuran tombol, ukuran icon, border radius, serta state **Normal** dan **Hover**. Masing-masing state memiliki warna icon, background, dan warna border sendiri.
+
+Selector tombol mengunci warna icon dan background pada hover/focus agar style tombol global dari tema atau Elementor tidak membuat icon putih di atas background putih. Default hover memakai background accent dengan icon putih.
 
 ## Parameter URL tamu
 

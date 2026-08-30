@@ -581,6 +581,149 @@ class TL_QR_Checkin_Widget extends \Elementor\Widget_Base {
         $this->end_controls_section();
 
         $this->start_controls_section(
+            'section_trigger_style',
+            [
+                'label' => esc_html__( 'Tombol QR', 'tl-qr-checkin' ),
+                'tab'   => \Elementor\Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_responsive_control(
+            'trigger_button_size',
+            [
+                'label'      => esc_html__( 'Ukuran Tombol', 'tl-qr-checkin' ),
+                'type'       => \Elementor\Controls_Manager::SLIDER,
+                'size_units' => [ 'px' ],
+                'range'      => [ 'px' => [ 'min' => 30, 'max' => 100 ] ],
+                'default'    => [ 'size' => 42, 'unit' => 'px' ],
+                'selectors'  => [
+                    '{{WRAPPER}} .tlqr-widget' => '--tlqr-trigger-size: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'trigger_icon_size',
+            [
+                'label'      => esc_html__( 'Ukuran Icon', 'tl-qr-checkin' ),
+                'type'       => \Elementor\Controls_Manager::SLIDER,
+                'size_units' => [ 'px' ],
+                'range'      => [ 'px' => [ 'min' => 12, 'max' => 60 ] ],
+                'default'    => [ 'size' => 21, 'unit' => 'px' ],
+                'selectors'  => [
+                    '{{WRAPPER}} .tlqr-widget' => '--tlqr-trigger-icon-size: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'trigger_border_radius',
+            [
+                'label'      => esc_html__( 'Border Radius', 'tl-qr-checkin' ),
+                'type'       => \Elementor\Controls_Manager::SLIDER,
+                'size_units' => [ 'px', '%' ],
+                'range'      => [
+                    'px' => [ 'min' => 0, 'max' => 50 ],
+                    '%'  => [ 'min' => 0, 'max' => 50 ],
+                ],
+                'default'    => [ 'size' => 12, 'unit' => 'px' ],
+                'selectors'  => [
+                    '{{WRAPPER}} .tlqr-widget' => '--tlqr-trigger-radius: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->start_controls_tabs( 'trigger_color_tabs' );
+
+        $this->start_controls_tab(
+            'trigger_normal_tab',
+            [ 'label' => esc_html__( 'Normal', 'tl-qr-checkin' ) ]
+        );
+
+        $this->add_control(
+            'trigger_icon_color',
+            [
+                'label'     => esc_html__( 'Warna Icon', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'default'   => '#171717',
+                'selectors' => [
+                    '{{WRAPPER}} .tlqr-widget' => '--tlqr-trigger-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'trigger_background_color',
+            [
+                'label'     => esc_html__( 'Background', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'default'   => '#FFFFFF',
+                'selectors' => [
+                    '{{WRAPPER}} .tlqr-widget' => '--tlqr-trigger-background: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'trigger_border_color',
+            [
+                'label'     => esc_html__( 'Warna Border', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'default'   => '#E8E8E8',
+                'selectors' => [
+                    '{{WRAPPER}} .tlqr-widget' => '--tlqr-trigger-border: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->end_controls_tab();
+
+        $this->start_controls_tab(
+            'trigger_hover_tab',
+            [ 'label' => esc_html__( 'Hover', 'tl-qr-checkin' ) ]
+        );
+
+        $this->add_control(
+            'trigger_hover_icon_color',
+            [
+                'label'     => esc_html__( 'Warna Icon', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'default'   => '#FFFFFF',
+                'selectors' => [
+                    '{{WRAPPER}} .tlqr-widget' => '--tlqr-trigger-hover-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'trigger_hover_background_color',
+            [
+                'label'     => esc_html__( 'Background', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'default'   => '#B89A67',
+                'selectors' => [
+                    '{{WRAPPER}} .tlqr-widget' => '--tlqr-trigger-hover-background: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'trigger_hover_border_color',
+            [
+                'label'     => esc_html__( 'Warna Border', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'default'   => '#B89A67',
+                'selectors' => [
+                    '{{WRAPPER}} .tlqr-widget' => '--tlqr-trigger-hover-border: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->end_controls_tab();
+        $this->end_controls_tabs();
+        $this->end_controls_section();
+
+        $this->start_controls_section(
             'section_style',
             [
                 'label' => esc_html__( 'Warna', 'tl-qr-checkin' ),

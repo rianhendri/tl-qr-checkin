@@ -2,6 +2,17 @@
 
 Semua perubahan penting TL QR Check-in dicatat di file ini. Versi mengikuti Semantic Versioning.
 
+## 1.3.0 - 2026-08-30
+
+### Added
+
+- Menambahkan kontrol Style tombol QR untuk ukuran tombol/icon, border radius, serta warna icon, background, dan border pada state Normal dan Hover.
+
+### Fixed
+
+- Mengunci style hover/focus tombol QR agar CSS tombol global dari tema tidak mengubah icon tanpa menyesuaikan background.
+- Memulihkan penguncian transform backdrop dan fallback transform foto untuk mencegah konflik CSS tema.
+
 ## 1.2.0 - 2026-08-30
 
 ### Added

@@ -1,3 +1,3 @@
 50e4342e79d18cd34696baa900ab9e9a56d0c567fb805895687567882da3311b  assets/vendor/qrcode/qrcode.browser.js
 ea9be0d2174ed633bb285364f4016390a4d9bb8bdd3ce587c1d0a196c3dce6c6  assets/js/tl-qr-checkin.js
-296228fc5b8180183881b0a00620face8bd0be0e514f5a8bb1418d4bc6df772b  assets/css/tl-qr-checkin.css
+74cd4625d42769315647412464c353a5e57b58300e7b092f92d9ffc34ed4e155  assets/css/tl-qr-checkin.css
