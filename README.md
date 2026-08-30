@@ -1,4 +1,4 @@
-# TL QR Check-in 1.1.1
+# TL QR Check-in 1.1.2
 
 Lightweight Elementor widget untuk menampilkan QR Check-in tamu dari URL yang sedang dibuka.
 
@@ -88,6 +88,8 @@ Plugin tidak perlu mengenali parameter `checkin`; parameter apa pun yang ada di 
 ## Download PNG
 
 Tombol **Download QR** membuat PNG **1080 × 1920 (9:16)** langsung di browser.
+
+Hasil PNG memakai satu kartu utuh: hero, area QR/detail, dan footer saling menyambung dengan garis pemisah seperti preview widget.
 
 Tidak ada file yang di-upload ke Media Library atau disimpan ke server.
 

@@ -508,34 +508,41 @@
         ctx.fillRect(0, 0, 1080, 1920);
 
         var margin = 60;
-        var cardW = 960;
+        var cardX = margin, cardY = 60, cardW = 960, cardH = Math.round(cardW * 16 / 9), cardR = 34;
+        var heroX = cardX, heroY = cardY, heroW = cardW, heroH = Math.round(cardH * .38);
+        var mainY = heroY + heroH;
+        var footerH = Math.round(cardH * .10), footerY = cardY + cardH - footerH;
+
+        // One continuous 9:16 card. The outer clip supplies the top and bottom corners.
+        ctx.save();
+        ctx.shadowColor = 'rgba(0,0,0,.10)';
+        ctx.shadowBlur = 34;
+        ctx.shadowOffsetY = 14;
+        fillRoundedRect(ctx, cardX, cardY, cardW, cardH, cardR, surface);
+        ctx.restore();
+
+        ctx.save();
+        roundedRectPath(ctx, cardX, cardY, cardW, cardH, cardR);
+        ctx.clip();
 
         // Hero.
-        var heroX = margin, heroY = 60, heroW = cardW, heroH = 650, heroR = 34;
-        fillRoundedRect(ctx, heroX, heroY, heroW, heroH, heroR, '#202020');
+        ctx.fillStyle = '#202020';
+        ctx.fillRect(heroX, heroY, heroW, heroH);
         if (hero) {
-            drawCoverImage(ctx, hero, heroX, heroY, heroW, heroH, heroR, data.heroPosition, data.heroZoom);
+            drawCoverImage(ctx, hero, heroX, heroY, heroW, heroH, 0, data.heroPosition, data.heroZoom);
         } else {
             var fallbackGradient = ctx.createLinearGradient(heroX, heroY, heroX + heroW, heroY + heroH);
             fallbackGradient.addColorStop(0, '#3b3b3b');
             fallbackGradient.addColorStop(1, '#151515');
-            ctx.save();
-            roundedRectPath(ctx, heroX, heroY, heroW, heroH, heroR);
-            ctx.clip();
             ctx.fillStyle = fallbackGradient;
             ctx.fillRect(heroX, heroY, heroW, heroH);
-            ctx.restore();
         }
 
-        ctx.save();
-        roundedRectPath(ctx, heroX, heroY, heroW, heroH, heroR);
-        ctx.clip();
         var shade = ctx.createLinearGradient(0, heroY + 180, 0, heroY + heroH);
         shade.addColorStop(0, 'rgba(0,0,0,0)');
         shade.addColorStop(1, 'rgba(0,0,0,.72)');
         ctx.fillStyle = shade;
         ctx.fillRect(heroX, heroY, heroW, heroH);
-        ctx.restore();
 
         if (data.tag) {
             ctx.font = '700 24px Arial, sans-serif';
@@ -577,12 +584,11 @@
             ctx.fillText(data.subtitle, 540, heroY + 625);
         }
 
-        // Main card.
-        var mainX = margin, mainY = 745, mainW = cardW, mainH = 825;
-        fillRoundedRect(ctx, mainX, mainY, mainW, mainH, 34, surface);
-        strokeRoundedRect(ctx, mainX, mainY, mainW, mainH, 34, line, 2);
+        // Main content stays attached to the hero and footer.
+        ctx.fillStyle = surface;
+        ctx.fillRect(cardX, mainY, cardW, footerY - mainY);
 
-        var qrX = 100, qrY = 810, qrSize = 425;
+        var qrX = 100, qrY = 775, qrSize = 425;
         fillRoundedRect(ctx, qrX, qrY, qrSize, qrSize, 24, '#ffffff');
         strokeRoundedRect(ctx, qrX, qrY, qrSize, qrSize, 24, line, 2);
         drawQrMatrix(ctx, this.qr, qrX + 14, qrY + 14, qrSize - 28);
@@ -598,7 +604,7 @@
         // Details.
         var detailsX = 575;
         var detailsW = 385;
-        var rowY = 808;
+        var rowY = 773;
         var rows = [];
         rows.push({ icon: 'user', label: 'Dear', value: data.guest, max: 2 });
         if (data.pax) rows.push({ icon: 'pax', label: 'Pax', value: data.pax, max: 1 });
@@ -610,6 +616,13 @@
         var availableH = 690;
         var rowH = Math.floor(availableH / Math.max(rows.length, 1));
         rowH = Math.min(124, Math.max(88, rowH));
+
+        ctx.strokeStyle = line;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(550, mainY + 40);
+        ctx.lineTo(550, footerY - 40);
+        ctx.stroke();
 
         for (var r = 0; r < rows.length; r += 1) {
             var item = rows[r];
@@ -634,10 +647,16 @@
             rowY += rowH;
         }
 
-        // Footer.
-        var footerX = margin, footerY = 1620, footerW = cardW, footerH = 180;
-        fillRoundedRect(ctx, footerX, footerY, footerW, footerH, 30, '#ffffff');
-        strokeRoundedRect(ctx, footerX, footerY, footerW, footerH, 30, line, 2);
+        // Footer remains inside the same outer card, separated by one line.
+        var footerX = cardX, footerW = cardW;
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(footerX, footerY, footerW, footerH);
+        ctx.strokeStyle = line;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(footerX, footerY);
+        ctx.lineTo(footerX + footerW, footerY);
+        ctx.stroke();
 
         if (logo) {
             var logoMaxW = 190, logoMaxH = 86;
@@ -661,6 +680,9 @@
                 ctx.fillText(poweredLines[p], footerX + footerW - 42, footerY + 112 + p * 30);
             }
         }
+
+        ctx.restore();
+        strokeRoundedRect(ctx, cardX, cardY, cardW, cardH, cardR, line, 2);
 
         return { canvas: canvas, heroMissing: !!data.heroUrl && !hero, logoMissing: !!data.logoUrl && !logo };
     };

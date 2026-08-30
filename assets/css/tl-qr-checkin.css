@@ -73,15 +73,36 @@
     align-items: flex-end;
 }
 
-.tlqr-backdrop {
+.tlqr-widget .tlqr-backdrop {
     position: absolute;
     inset: 0;
-    border: 0;
-    padding: 0;
-    background: rgba(11, 11, 12, .48);
     opacity: 0;
     cursor: default;
     transition: opacity .34s ease;
+}
+
+.tlqr-widget .tlqr-backdrop,
+.tlqr-widget .tlqr-backdrop:hover,
+.tlqr-widget .tlqr-backdrop:focus,
+.tlqr-widget .tlqr-backdrop:focus-visible,
+.tlqr-widget .tlqr-backdrop:active {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    background: rgba(11, 11, 12, .48) !important;
+    color: transparent !important;
+    box-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
+    outline: none !important;
+}
+
+.tlqr-widget .tlqr-backdrop::before,
+.tlqr-widget .tlqr-backdrop::after {
+    content: none !important;
+    display: none !important;
 }
 
 .tlqr-sheet {
@@ -101,7 +122,7 @@
     box-shadow: 0 -18px 55px rgba(0, 0, 0, .20);
 }
 
-.tlqr-overlay.is-open .tlqr-backdrop {
+.tlqr-widget .tlqr-overlay.is-open .tlqr-backdrop {
     opacity: 1;
 }
 

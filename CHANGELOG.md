@@ -2,6 +2,14 @@
 
 Semua perubahan penting TL QR Check-in dicatat di file ini. Versi mengikuti Semantic Versioning.
 
+## 1.1.2 - 2026-08-30
+
+### Fixed
+
+- Menyatukan hero, area QR/detail, dan footer pada hasil PNG agar tidak tampil sebagai tiga kartu terpisah.
+- Menambahkan divider kolom dan footer pada Canvas agar layout download mengikuti preview widget.
+- Mengunci warna backdrop popup agar style hover/focus tombol dari tema tidak mengubahnya menjadi warna lain.
+
 ## 1.1.1 - 2026-08-30
 
 ### Fixed
