@@ -1,4 +1,4 @@
-# TL QR Check-in 1.1.2
+# TL QR Check-in 1.2.0
 
 Lightweight Elementor widget untuk menampilkan QR Check-in tamu dari URL yang sedang dibuka.
 
@@ -54,11 +54,28 @@ Field berikut mendukung Elementor Dynamic Tags:
 
 ## Posisi foto mempelai
 
-Foto mempelai selalu ditampilkan dengan mode `cover`. Kontrol **Posisi Foto** menyediakan sembilan titik fokus dari kiri atas sampai kanan bawah, dengan default **Tengah (`center center`)**. Untuk foto dengan subjek di bagian bawah, gunakan **Tengah Bawah**.
+Foto mempelai memakai elemen gambar dengan perilaku visual setara background Elementor. Kontrol **Posisi Foto** menyediakan sembilan titik fokus dari kiri atas sampai kanan bawah, dengan default **Tengah (`center center`)**.
 
-Kontrol **Zoom Foto** mengatur crop dari `1.00` sampai `2.50`, dengan default `1.35`. Naikkan zoom untuk mengurangi tembok, langit, atau area kosong yang terlalu dominan di sekitar subjek.
+Kontrol **Display Size** menyediakan:
 
-Posisi dan zoom yang dipilih digunakan secara konsisten pada kartu di halaman dan pada hasil download PNG 1080 × 1920.
+- `Cover` (default): memenuhi seluruh area hero dan memotong sisi foto bila perlu.
+- `Contain`: menampilkan seluruh foto tanpa crop, dengan kemungkinan ruang kosong.
+- `Auto`: memakai ukuran asli foto.
+
+Posisi dan display size yang dipilih digunakan secara konsisten pada kartu di halaman dan pada hasil download PNG 1080 × 1920.
+
+Nilai Zoom Foto dari widget versi lama tetap dipakai untuk menjaga layout setelah update, tetapi kontrol tersebut tidak lagi ditampilkan pada widget baru.
+
+## Style teks kartu
+
+Tab **Style** Elementor menyediakan kontrol warna dan Typography (termasuk font family/Custom Fonts, ukuran, weight, transform, style, line-height, dan spacing) untuk:
+
+- The Wedding Of, nama pasangan, dan subtitle hero;
+- judul serta petunjuk scan;
+- label dan isi detail tamu;
+- teks Powered By.
+
+Font family, ukuran, weight, style, transform, dan warna yang didukung Canvas ikut diterapkan pada PNG. Browser memakai fallback font jika Custom Font belum berhasil dimuat saat download.
 
 ## Parameter URL tamu
 

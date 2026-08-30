@@ -14,9 +14,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     data-editor-preview="<?php echo $view['is_editor'] ? '1' : '0'; ?>"
     data-hero-url="<?php echo esc_url( $view['hero_url'] ); ?>"
     data-hero-position="<?php echo esc_attr( $view['hero_position'] ); ?>"
+    data-hero-size="<?php echo esc_attr( $view['hero_size'] ); ?>"
     data-hero-zoom="<?php echo esc_attr( (string) $view['hero_zoom'] ); ?>"
     data-logo-url="<?php echo esc_url( $view['logo_url'] ); ?>"
-    style="--tlqr-hero-position: <?php echo esc_attr( $view['hero_position'] ); ?>; --tlqr-hero-zoom: <?php echo esc_attr( (string) $view['hero_zoom'] ); ?>;"
 >
     <button class="tlqr-trigger" type="button" aria-label="<?php echo esc_attr( $view['trigger_label'] ); ?>" aria-haspopup="dialog" aria-expanded="false">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -44,7 +44,13 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <article class="tlqr-pass" aria-label="<?php esc_attr_e( 'Kartu QR Check-in 9:16', 'tl-qr-checkin' ); ?>">
                     <header class="tlqr-hero<?php echo $view['hero_url'] ? '' : ' tlqr-hero--empty'; ?>">
                         <?php if ( $view['hero_url'] ) : ?>
-                            <img class="tlqr-hero-image" src="<?php echo esc_url( $view['hero_url'] ); ?>" alt="" decoding="async" />
+                            <img
+                                class="tlqr-hero-image"
+                                src="<?php echo esc_url( $view['hero_url'] ); ?>"
+                                alt=""
+                                decoding="async"
+                                style="object-position: <?php echo esc_attr( $view['hero_position'] ); ?>; object-fit: <?php echo esc_attr( $view['hero_size'] ); ?>; transform: scale(<?php echo esc_attr( (string) $view['hero_zoom'] ); ?>); transform-origin: <?php echo esc_attr( $view['hero_position'] ); ?>;"
+                            />
                         <?php endif; ?>
                         <div class="tlqr-hero-shade" aria-hidden="true"></div>
 

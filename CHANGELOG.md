@@ -2,6 +2,19 @@
 
 Semua perubahan penting TL QR Check-in dicatat di file ini. Versi mengikuti Semantic Versioning.
 
+## 1.2.0 - 2026-08-30
+
+### Added
+
+- Menambahkan kontrol Display Size foto (`Cover`, `Contain`, dan `Auto`).
+- Menambahkan kontrol warna dan Typography Elementor untuk teks hero, scan, detail tamu, dan Powered By.
+
+### Changed
+
+- Mengganti kontrol Zoom Foto dengan Position dan Display Size yang mengikuti pola background Elementor.
+- Menyamakan pengaturan gambar dan style teks antara preview kartu dengan hasil PNG.
+- Mempertahankan nilai Zoom Foto yang sudah tersimpan sebagai kompatibilitas layout widget lama tanpa menampilkannya pada UI baru.
+
 ## 1.1.2 - 2026-08-30
 
 ### Fixed

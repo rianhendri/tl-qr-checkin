@@ -7,8 +7,6 @@
     --tlqr-sheet: #f7f7f6;
     --tlqr-trigger-top: 22px;
     --tlqr-trigger-right: 18px;
-    --tlqr-hero-position: center center;
-    --tlqr-hero-zoom: 1.35;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: var(--tlqr-text);
 }
@@ -95,7 +93,8 @@
     color: transparent !important;
     box-shadow: none !important;
     filter: none !important;
-    transform: none !important;
+    transform: none;
+    transform-origin: center center;
     outline: none !important;
 }
 
@@ -214,10 +213,9 @@
     width: 100% !important;
     height: 100% !important;
     max-width: none !important;
-    object-fit: cover !important;
-    object-position: var(--tlqr-hero-position) !important;
-    transform: scale(var(--tlqr-hero-zoom));
-    transform-origin: var(--tlqr-hero-position);
+    object-fit: cover;
+    object-position: center center;
+    transform: none !important;
     display: block;
 }
 

@@ -76,25 +76,39 @@ class TL_QR_Checkin_Widget extends \Elementor\Widget_Base {
                     'center bottom' => esc_html__( 'Tengah Bawah', 'tl-qr-checkin' ),
                     'right bottom'  => esc_html__( 'Kanan Bawah', 'tl-qr-checkin' ),
                 ],
-                'description' => esc_html__( 'Foto selalu memakai mode cover. Gunakan Tengah Bawah jika subjek berada di bagian bawah foto.', 'tl-qr-checkin' ),
+                'description' => esc_html__( 'Tentukan titik fokus foto seperti pengaturan background Elementor.', 'tl-qr-checkin' ),
                 'selectors'   => [
-                    '{{WRAPPER}} .tlqr-widget' => '--tlqr-hero-position: {{VALUE}};',
+                    '{{WRAPPER}} .tlqr-widget .tlqr-hero > .tlqr-hero-image' => 'object-position: {{VALUE}} !important; transform-origin: {{VALUE}} !important;',
                 ],
             ]
         );
 
         $this->add_control(
+            'hero_image_size',
+            [
+                'label'       => esc_html__( 'Display Size', 'tl-qr-checkin' ),
+                'type'        => \Elementor\Controls_Manager::SELECT,
+                'default'     => 'cover',
+                'options'     => [
+                    'cover'   => esc_html__( 'Cover', 'tl-qr-checkin' ),
+                    'contain' => esc_html__( 'Contain', 'tl-qr-checkin' ),
+                    'none'    => esc_html__( 'Auto', 'tl-qr-checkin' ),
+                ],
+                'description' => esc_html__( 'Cover memenuhi area; Contain menampilkan seluruh foto; Auto memakai ukuran asli.', 'tl-qr-checkin' ),
+                'selectors'   => [
+                    '{{WRAPPER}} .tlqr-widget .tlqr-hero > .tlqr-hero-image' => 'object-fit: {{VALUE}} !important;',
+                ],
+            ]
+        );
+
+        // Keep previously saved zoom values working without exposing the retired control on new edits.
+        $this->add_control(
             'hero_image_zoom',
             [
-                'label'       => esc_html__( 'Zoom Foto', 'tl-qr-checkin' ),
-                'type'        => \Elementor\Controls_Manager::NUMBER,
-                'default'     => 1.35,
-                'min'         => 1,
-                'max'         => 2.5,
-                'step'        => 0.05,
-                'description' => esc_html__( '1.00 menampilkan cover normal. Naikkan zoom untuk mengurangi area kosong di sekitar subjek.', 'tl-qr-checkin' ),
-                'selectors'   => [
-                    '{{WRAPPER}} .tlqr-widget' => '--tlqr-hero-zoom: {{VALUE}};',
+                'type'      => \Elementor\Controls_Manager::HIDDEN,
+                'default'   => 1,
+                'selectors' => [
+                    '{{WRAPPER}} .tlqr-widget .tlqr-hero > .tlqr-hero-image' => 'transform: scale({{VALUE}}) !important;',
                 ],
             ]
         );
@@ -205,6 +219,248 @@ class TL_QR_Checkin_Widget extends \Elementor\Widget_Base {
                 'default'     => 'TL Invitation',
                 'dynamic'     => [ 'active' => true ],
                 'label_block' => true,
+            ]
+        );
+
+        $this->end_controls_section();
+
+        $this->start_controls_section(
+            'section_hero_text_style',
+            [
+                'label' => esc_html__( 'Teks Hero', 'tl-qr-checkin' ),
+                'tab'   => \Elementor\Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_control(
+            'wedding_title_style_heading',
+            [
+                'label' => esc_html__( 'The Wedding Of', 'tl-qr-checkin' ),
+                'type'  => \Elementor\Controls_Manager::HEADING,
+            ]
+        );
+
+        $this->add_control(
+            'wedding_title_color',
+            [
+                'label'     => esc_html__( 'Warna', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .tlqr-widget .tlqr-wedding-title' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name'     => 'wedding_title_typography',
+                'selector' => '{{WRAPPER}} .tlqr-widget .tlqr-wedding-title',
+            ]
+        );
+
+        $this->add_control(
+            'couple_name_style_heading',
+            [
+                'label'     => esc_html__( 'Nama Pasangan', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'couple_name_color',
+            [
+                'label'     => esc_html__( 'Warna', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .tlqr-widget .tlqr-couple-name' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name'     => 'couple_name_typography',
+                'selector' => '{{WRAPPER}} .tlqr-widget .tlqr-couple-name',
+            ]
+        );
+
+        $this->add_control(
+            'subtitle_style_heading',
+            [
+                'label'     => esc_html__( 'Subtitle', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'subtitle_color',
+            [
+                'label'     => esc_html__( 'Warna', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .tlqr-widget .tlqr-subtitle-text' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name'     => 'subtitle_typography',
+                'selector' => '{{WRAPPER}} .tlqr-widget .tlqr-subtitle-text',
+            ]
+        );
+
+        $this->end_controls_section();
+
+        $this->start_controls_section(
+            'section_card_text_style',
+            [
+                'label' => esc_html__( 'Teks Kartu', 'tl-qr-checkin' ),
+                'tab'   => \Elementor\Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_control(
+            'scan_title_style_heading',
+            [
+                'label' => esc_html__( 'Judul Scan', 'tl-qr-checkin' ),
+                'type'  => \Elementor\Controls_Manager::HEADING,
+            ]
+        );
+
+        $this->add_control(
+            'scan_title_color',
+            [
+                'label'     => esc_html__( 'Warna', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .tlqr-widget .tlqr-scan-title' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name'     => 'scan_title_typography',
+                'selector' => '{{WRAPPER}} .tlqr-widget .tlqr-scan-title',
+            ]
+        );
+
+        $this->add_control(
+            'scan_help_style_heading',
+            [
+                'label'     => esc_html__( 'Petunjuk Scan', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'scan_help_color',
+            [
+                'label'     => esc_html__( 'Warna', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .tlqr-widget .tlqr-scan-help' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name'     => 'scan_help_typography',
+                'selector' => '{{WRAPPER}} .tlqr-widget .tlqr-scan-help',
+            ]
+        );
+
+        $this->add_control(
+            'detail_label_style_heading',
+            [
+                'label'     => esc_html__( 'Label Detail', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'detail_label_color',
+            [
+                'label'     => esc_html__( 'Warna', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .tlqr-widget .tlqr-detail-label' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name'     => 'detail_label_typography',
+                'selector' => '{{WRAPPER}} .tlqr-widget .tlqr-detail-label',
+            ]
+        );
+
+        $this->add_control(
+            'detail_value_style_heading',
+            [
+                'label'     => esc_html__( 'Isi Detail', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'detail_value_color',
+            [
+                'label'     => esc_html__( 'Warna', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .tlqr-widget .tlqr-detail-copy strong' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name'     => 'detail_value_typography',
+                'selector' => '{{WRAPPER}} .tlqr-widget .tlqr-detail-copy strong',
+            ]
+        );
+
+        $this->add_control(
+            'powered_style_heading',
+            [
+                'label'     => esc_html__( 'Powered By', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'powered_color',
+            [
+                'label'     => esc_html__( 'Warna', 'tl-qr-checkin' ),
+                'type'      => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .tlqr-widget .tlqr-powered, {{WRAPPER}} .tlqr-widget .tlqr-powered strong' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name'     => 'powered_typography',
+                'selector' => '{{WRAPPER}} .tlqr-widget .tlqr-powered',
             ]
         );
 
@@ -407,7 +663,10 @@ class TL_QR_Checkin_Widget extends \Elementor\Widget_Base {
         $hero_position = in_array( $settings['hero_image_position'] ?? '', $hero_positions, true )
             ? $settings['hero_image_position']
             : 'center center';
-        $hero_zoom = isset( $settings['hero_image_zoom'] ) ? (float) $settings['hero_image_zoom'] : 1.35;
+        $hero_size = in_array( $settings['hero_image_size'] ?? '', [ 'cover', 'contain', 'none' ], true )
+            ? $settings['hero_image_size']
+            : 'cover';
+        $hero_zoom = isset( $settings['hero_image_zoom'] ) ? (float) $settings['hero_image_zoom'] : 1;
         $hero_zoom = max( 1, min( 2.5, $hero_zoom ) );
 
         $view = [
@@ -416,6 +675,7 @@ class TL_QR_Checkin_Widget extends \Elementor\Widget_Base {
             'trigger_label'  => $clean( $settings['trigger_label'] ?? 'Buka QR Check-in' ),
             'hero_url'       => $hero_url,
             'hero_position'  => $hero_position,
+            'hero_size'      => $hero_size,
             'hero_zoom'      => $hero_zoom,
             'wedding_title'  => $clean( $settings['wedding_title'] ?? 'THE WEDDING OF' ),
             'couple_name'    => $couple_name,

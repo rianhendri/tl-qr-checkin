@@ -20,6 +20,44 @@
         return text.slice(0, maxLength || 500);
     }
 
+    function textStyleOf(root, selector, fallback) {
+        var element = qs(root, selector);
+        var style = element ? window.getComputedStyle(element) : null;
+        return {
+            color: style ? style.color : fallback.color,
+            fontFamily: style ? style.fontFamily : fallback.fontFamily,
+            fontSize: style ? parseFloat(style.fontSize) : fallback.fontSize,
+            fontStyle: style ? style.fontStyle : 'normal',
+            fontWeight: style ? style.fontWeight : fallback.fontWeight,
+            textTransform: style ? style.textTransform : (fallback.textTransform || 'none')
+        };
+    }
+
+    function exportFontSize(style, previewBase, canvasBase, min, max) {
+        var previewSize = parseFloat(style.fontSize);
+        if (!isFinite(previewSize) || previewSize <= 0) previewSize = previewBase;
+        return Math.max(min, Math.min(max, canvasBase * previewSize / previewBase));
+    }
+
+    function setCanvasFont(ctx, style, size) {
+        var fontStyle = /^(?:italic|oblique)$/.test(style.fontStyle) ? style.fontStyle : 'normal';
+        var fontWeight = /^(?:normal|bold|[1-9]00)$/.test(String(style.fontWeight)) ? style.fontWeight : '400';
+        var fontFamily = safeString(style.fontFamily, 260) || 'Arial, sans-serif';
+        ctx.font = fontStyle + ' ' + fontWeight + ' ' + Math.round(size) + 'px ' + fontFamily;
+    }
+
+    function transformText(value, transform) {
+        var text = safeString(value, 1000);
+        if (transform === 'uppercase') return text.toUpperCase();
+        if (transform === 'lowercase') return text.toLowerCase();
+        if (transform === 'capitalize') {
+            return text.replace(/(^|\s)(\S)/g, function (match, space, letter) {
+                return space + letter.toUpperCase();
+            });
+        }
+        return text;
+    }
+
     function slugify(value) {
         var source = safeString(value, 100).toLowerCase();
         if (source.normalize) {
@@ -119,7 +157,7 @@
         return lines.length;
     }
 
-    function coverPosition(value) {
+    function imagePosition(value) {
         var positions = {
             'left top': [0, 0],
             'center top': [.5, 0],
@@ -132,28 +170,52 @@
             'right bottom': [1, 1]
         };
 
-        return positions[value] || positions['center center'];
+        var normalized = safeString(value, 80).toLowerCase();
+        if (positions[normalized]) return positions[normalized];
+
+        var parts = normalized.split(/\s+/).filter(Boolean);
+        function axisValue(part, fallback) {
+            if (part === 'left' || part === 'top') return 0;
+            if (part === 'center') return .5;
+            if (part === 'right' || part === 'bottom') return 1;
+            if (/^-?\d+(?:\.\d+)?%$/.test(part)) {
+                return Math.max(0, Math.min(1, parseFloat(part) / 100));
+            }
+            return fallback;
+        }
+
+        return [axisValue(parts[0], .5), axisValue(parts[1], .5)];
     }
 
-    function coverZoom(value) {
+    function imageFit(value) {
+        return value === 'contain' || value === 'none' ? value : 'cover';
+    }
+
+    function imageZoom(value) {
         var zoom = parseFloat(value);
-        if (!isFinite(zoom)) zoom = 1.35;
+        if (!isFinite(zoom)) zoom = 1;
         return Math.max(1, Math.min(2.5, zoom));
     }
 
-    function drawCoverImage(ctx, img, x, y, w, h, radius, position, zoomValue) {
-        var zoom = coverZoom(zoomValue);
-        var scale = Math.max(w / img.naturalWidth, h / img.naturalHeight) * zoom;
-        var sw = w / scale;
-        var sh = h / scale;
-        var anchor = coverPosition(position);
-        var sx = (img.naturalWidth - sw) * anchor[0];
-        var sy = (img.naturalHeight - sh) * anchor[1];
+    function drawFittedImage(ctx, img, x, y, w, h, radius, position, fitValue, zoomValue) {
+        if (!img.naturalWidth || !img.naturalHeight) return;
+        var fit = imageFit(fitValue);
+        var scale = fit === 'cover'
+            ? Math.max(w / img.naturalWidth, h / img.naturalHeight)
+            : fit === 'contain'
+                ? Math.min(w / img.naturalWidth, h / img.naturalHeight)
+                : 1;
+        scale *= imageZoom(zoomValue);
+        var dw = img.naturalWidth * scale;
+        var dh = img.naturalHeight * scale;
+        var anchor = imagePosition(position);
+        var dx = x + (w - dw) * anchor[0];
+        var dy = y + (h - dh) * anchor[1];
 
         ctx.save();
         roundedRectPath(ctx, x, y, w, h, radius);
         ctx.clip();
-        ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+        ctx.drawImage(img, dx, dy, dw, dh);
         ctx.restore();
     }
 
@@ -459,6 +521,8 @@
     };
 
     TLQRCheckin.prototype.collectCardData = function () {
+        var heroImage = qs(this.root, '.tlqr-hero-image');
+        var heroStyle = heroImage ? window.getComputedStyle(heroImage) : null;
         return {
             tag: textOf(this.root, '[data-tlqr-tag]'),
             weddingTitle: textOf(this.root, '.tlqr-wedding-title'),
@@ -472,8 +536,9 @@
             notes: textOf(this.root, '[data-tlqr-notes]'),
             poweredBy: textOf(this.root, '.tlqr-powered strong'),
             heroUrl: this.root.dataset.heroUrl || '',
-            heroPosition: this.root.dataset.heroPosition || 'center center',
-            heroZoom: coverZoom(this.root.dataset.heroZoom),
+            heroPosition: heroStyle ? heroStyle.objectPosition : (this.root.dataset.heroPosition || 'center center'),
+            heroSize: imageFit(heroStyle ? heroStyle.objectFit : this.root.dataset.heroSize),
+            heroZoom: imageZoom(this.root.dataset.heroZoom),
             logoUrl: this.root.dataset.logoUrl || ''
         };
     };
@@ -488,6 +553,25 @@
         var surface = computed.getPropertyValue('--tlqr-surface').trim() || '#ffffff';
         var muted = '#77736d';
         var line = '#e9e6e0';
+        var textStyles = {
+            weddingTitle: textStyleOf(this.root, '.tlqr-wedding-title', { color: '#f2dfbd', fontFamily: 'Arial, sans-serif', fontSize: 8, fontWeight: '700', textTransform: 'uppercase' }),
+            coupleName: textStyleOf(this.root, '.tlqr-couple-name', { color: '#ffffff', fontFamily: 'Georgia, serif', fontSize: 31, fontWeight: '400' }),
+            subtitle: textStyleOf(this.root, '.tlqr-subtitle-text', { color: 'rgba(255,255,255,.88)', fontFamily: 'Arial, sans-serif', fontSize: 8, fontWeight: '400' }),
+            scanTitle: textStyleOf(this.root, '.tlqr-scan-title', { color: accent, fontFamily: 'Arial, sans-serif', fontSize: 10, fontWeight: '800' }),
+            scanHelp: textStyleOf(this.root, '.tlqr-scan-help', { color: muted, fontFamily: 'Arial, sans-serif', fontSize: 7.5, fontWeight: '400' }),
+            detailLabel: textStyleOf(this.root, '.tlqr-detail-label', { color: muted, fontFamily: 'Arial, sans-serif', fontSize: 7, fontWeight: '400' }),
+            detailValue: textStyleOf(this.root, '.tlqr-detail-copy strong', { color: text, fontFamily: 'Arial, sans-serif', fontSize: 8.4, fontWeight: '700' }),
+            poweredLabel: textStyleOf(this.root, '.tlqr-powered', { color: muted, fontFamily: 'Arial, sans-serif', fontSize: 7, fontWeight: '400' }),
+            poweredValue: textStyleOf(this.root, '.tlqr-powered strong', { color: text, fontFamily: 'Arial, sans-serif', fontSize: 7, fontWeight: '700' })
+        };
+
+        if (document.fonts && document.fonts.ready) {
+            try {
+                await document.fonts.ready;
+            } catch (fontError) {
+                // The browser will use its normal fallback font in the exported Canvas.
+            }
+        }
 
         var results = await Promise.all([
             loadCanvasImage(data.heroUrl),
@@ -529,7 +613,7 @@
         ctx.fillStyle = '#202020';
         ctx.fillRect(heroX, heroY, heroW, heroH);
         if (hero) {
-            drawCoverImage(ctx, hero, heroX, heroY, heroW, heroH, 0, data.heroPosition, data.heroZoom);
+            drawFittedImage(ctx, hero, heroX, heroY, heroW, heroH, 0, data.heroPosition, data.heroSize, data.heroZoom);
         } else {
             var fallbackGradient = ctx.createLinearGradient(heroX, heroY, heroX + heroW, heroY + heroH);
             fallbackGradient.addColorStop(0, '#3b3b3b');
@@ -565,23 +649,27 @@
         ctx.textAlign = 'center';
         ctx.textBaseline = 'alphabetic';
         if (data.weddingTitle) {
-            ctx.fillStyle = '#f2dfbd';
-            ctx.font = '700 22px Arial, sans-serif';
-            ctx.fillText(data.weddingTitle.toUpperCase(), 540, heroY + 480);
+            var weddingTitleSize = exportFontSize(textStyles.weddingTitle, 8, 22, 12, 52);
+            ctx.fillStyle = textStyles.weddingTitle.color;
+            setCanvasFont(ctx, textStyles.weddingTitle, weddingTitleSize);
+            ctx.fillText(transformText(data.weddingTitle, textStyles.weddingTitle.textTransform), 540, heroY + 480);
         }
         if (data.coupleName) {
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '700 60px Georgia, serif';
-            var coupleLines = wrapLines(ctx, data.coupleName, 820, 2);
-            var coupleStartY = heroY + 548 - Math.max(0, coupleLines.length - 1) * 31;
+            var coupleNameSize = exportFontSize(textStyles.coupleName, 31, 60, 24, 112);
+            var coupleLineHeight = Math.round(coupleNameSize * 1.1);
+            ctx.fillStyle = textStyles.coupleName.color;
+            setCanvasFont(ctx, textStyles.coupleName, coupleNameSize);
+            var coupleLines = wrapLines(ctx, transformText(data.coupleName, textStyles.coupleName.textTransform), 820, 2);
+            var coupleStartY = heroY + 548 - Math.max(0, coupleLines.length - 1) * coupleLineHeight / 2;
             for (var c = 0; c < coupleLines.length; c += 1) {
-                ctx.fillText(coupleLines[c], 540, coupleStartY + c * 66);
+                ctx.fillText(coupleLines[c], 540, coupleStartY + c * coupleLineHeight);
             }
         }
         if (data.subtitle) {
-            ctx.fillStyle = 'rgba(255,255,255,.88)';
-            ctx.font = '400 22px Arial, sans-serif';
-            ctx.fillText(data.subtitle, 540, heroY + 625);
+            var subtitleSize = exportFontSize(textStyles.subtitle, 8, 22, 12, 46);
+            ctx.fillStyle = textStyles.subtitle.color;
+            setCanvasFont(ctx, textStyles.subtitle, subtitleSize);
+            ctx.fillText(transformText(data.subtitle, textStyles.subtitle.textTransform), 540, heroY + 625);
         }
 
         // Main content stays attached to the hero and footer.
@@ -594,12 +682,14 @@
         drawQrMatrix(ctx, this.qr, qrX + 14, qrY + 14, qrSize - 28);
 
         ctx.textAlign = 'center';
-        ctx.fillStyle = accent;
-        ctx.font = '700 27px Arial, sans-serif';
-        ctx.fillText('Scan to check-in', qrX + qrSize / 2, qrY + qrSize + 54);
-        ctx.fillStyle = muted;
-        ctx.font = '400 20px Arial, sans-serif';
-        drawWrappedText(ctx, 'Tunjukkan QR ini di pintu masuk venue.', qrX + qrSize / 2, qrY + qrSize + 92, 360, 28, 2);
+        var scanTitleSize = exportFontSize(textStyles.scanTitle, 10, 27, 12, 52);
+        ctx.fillStyle = textStyles.scanTitle.color;
+        setCanvasFont(ctx, textStyles.scanTitle, scanTitleSize);
+        ctx.fillText(transformText('Scan to check-in', textStyles.scanTitle.textTransform), qrX + qrSize / 2, qrY + qrSize + 54);
+        var scanHelpSize = exportFontSize(textStyles.scanHelp, 7.5, 20, 10, 40);
+        ctx.fillStyle = textStyles.scanHelp.color;
+        setCanvasFont(ctx, textStyles.scanHelp, scanHelpSize);
+        drawWrappedText(ctx, transformText('Tunjukkan QR ini di pintu masuk venue.', textStyles.scanHelp.textTransform), qrX + qrSize / 2, qrY + qrSize + 92, 360, Math.round(scanHelpSize * 1.4), 2);
 
         // Details.
         var detailsX = 575;
@@ -638,12 +728,14 @@
             drawIcon(ctx, item.icon, detailsX + 8, rowY + 24, 36, accent);
 
             ctx.textAlign = 'left';
-            ctx.fillStyle = muted;
-            ctx.font = '400 18px Arial, sans-serif';
-            ctx.fillText(item.label, detailsX + 70, rowY + 37);
-            ctx.fillStyle = text;
-            ctx.font = '700 24px Arial, sans-serif';
-            drawWrappedText(ctx, item.value, detailsX + 70, rowY + 70, detailsW - 76, 30, item.max);
+            var detailLabelSize = exportFontSize(textStyles.detailLabel, 7, 18, 10, 36);
+            ctx.fillStyle = textStyles.detailLabel.color;
+            setCanvasFont(ctx, textStyles.detailLabel, detailLabelSize);
+            ctx.fillText(transformText(item.label, textStyles.detailLabel.textTransform), detailsX + 70, rowY + 37);
+            var detailValueSize = exportFontSize(textStyles.detailValue, 8.4, 24, 12, 50);
+            ctx.fillStyle = textStyles.detailValue.color;
+            setCanvasFont(ctx, textStyles.detailValue, detailValueSize);
+            drawWrappedText(ctx, transformText(item.value, textStyles.detailValue.textTransform), detailsX + 70, rowY + 70, detailsW - 76, Math.round(detailValueSize * 1.25), item.max);
             rowY += rowH;
         }
 
@@ -670,14 +762,16 @@
 
         if (data.poweredBy) {
             ctx.textAlign = 'right';
-            ctx.fillStyle = muted;
-            ctx.font = '400 19px Arial, sans-serif';
-            ctx.fillText('Powered by', footerX + footerW - 42, footerY + 75);
-            ctx.fillStyle = text;
-            ctx.font = '700 27px Arial, sans-serif';
-            var poweredLines = wrapLines(ctx, data.poweredBy, 430, 2);
+            var poweredLabelSize = exportFontSize(textStyles.poweredLabel, 7, 19, 10, 38);
+            ctx.fillStyle = textStyles.poweredLabel.color;
+            setCanvasFont(ctx, textStyles.poweredLabel, poweredLabelSize);
+            ctx.fillText(transformText('Powered by', textStyles.poweredLabel.textTransform), footerX + footerW - 42, footerY + 75);
+            var poweredValueSize = exportFontSize(textStyles.poweredValue, 7, 27, 12, 54);
+            ctx.fillStyle = textStyles.poweredValue.color;
+            setCanvasFont(ctx, textStyles.poweredValue, poweredValueSize);
+            var poweredLines = wrapLines(ctx, transformText(data.poweredBy, textStyles.poweredValue.textTransform), 430, 2);
             for (var p = 0; p < poweredLines.length; p += 1) {
-                ctx.fillText(poweredLines[p], footerX + footerW - 42, footerY + 112 + p * 30);
+                ctx.fillText(poweredLines[p], footerX + footerW - 42, footerY + 112 + p * Math.round(poweredValueSize * 1.1));
             }
         }
 
