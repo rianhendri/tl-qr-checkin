@@ -2,6 +2,13 @@
 
 Semua perubahan penting TL QR Check-in dicatat di file ini. Versi mengikuti Semantic Versioning.
 
+## 1.1.1 - 2026-08-30
+
+### Fixed
+
+- Memperkuat mode cover foto agar tidak ditimpa CSS gambar global Elementor.
+- Menambahkan zoom crop dan menyamakan posisi serta zoom foto pada preview dan PNG.
+
 ## 1.1.0 - 2026-08-30
 
 ### Added

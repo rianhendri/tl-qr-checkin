@@ -76,9 +76,25 @@ class TL_QR_Checkin_Widget extends \Elementor\Widget_Base {
                     'center bottom' => esc_html__( 'Tengah Bawah', 'tl-qr-checkin' ),
                     'right bottom'  => esc_html__( 'Kanan Bawah', 'tl-qr-checkin' ),
                 ],
-                'description' => esc_html__( 'Foto selalu memakai mode cover. Default: center center.', 'tl-qr-checkin' ),
+                'description' => esc_html__( 'Foto selalu memakai mode cover. Gunakan Tengah Bawah jika subjek berada di bagian bawah foto.', 'tl-qr-checkin' ),
                 'selectors'   => [
                     '{{WRAPPER}} .tlqr-widget' => '--tlqr-hero-position: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'hero_image_zoom',
+            [
+                'label'       => esc_html__( 'Zoom Foto', 'tl-qr-checkin' ),
+                'type'        => \Elementor\Controls_Manager::NUMBER,
+                'default'     => 1.35,
+                'min'         => 1,
+                'max'         => 2.5,
+                'step'        => 0.05,
+                'description' => esc_html__( '1.00 menampilkan cover normal. Naikkan zoom untuk mengurangi area kosong di sekitar subjek.', 'tl-qr-checkin' ),
+                'selectors'   => [
+                    '{{WRAPPER}} .tlqr-widget' => '--tlqr-hero-zoom: {{VALUE}};',
                 ],
             ]
         );
@@ -391,6 +407,8 @@ class TL_QR_Checkin_Widget extends \Elementor\Widget_Base {
         $hero_position = in_array( $settings['hero_image_position'] ?? '', $hero_positions, true )
             ? $settings['hero_image_position']
             : 'center center';
+        $hero_zoom = isset( $settings['hero_image_zoom'] ) ? (float) $settings['hero_image_zoom'] : 1.35;
+        $hero_zoom = max( 1, min( 2.5, $hero_zoom ) );
 
         $view = [
             'id'             => 'tlqr-' . $this->get_id(),
@@ -398,6 +416,7 @@ class TL_QR_Checkin_Widget extends \Elementor\Widget_Base {
             'trigger_label'  => $clean( $settings['trigger_label'] ?? 'Buka QR Check-in' ),
             'hero_url'       => $hero_url,
             'hero_position'  => $hero_position,
+            'hero_zoom'      => $hero_zoom,
             'wedding_title'  => $clean( $settings['wedding_title'] ?? 'THE WEDDING OF' ),
             'couple_name'    => $couple_name,
             'subtitle_text'  => $clean( $settings['subtitle_text'] ?? '' ),

@@ -135,8 +135,15 @@
         return positions[value] || positions['center center'];
     }
 
-    function drawCoverImage(ctx, img, x, y, w, h, radius, position) {
-        var scale = Math.max(w / img.naturalWidth, h / img.naturalHeight);
+    function coverZoom(value) {
+        var zoom = parseFloat(value);
+        if (!isFinite(zoom)) zoom = 1.35;
+        return Math.max(1, Math.min(2.5, zoom));
+    }
+
+    function drawCoverImage(ctx, img, x, y, w, h, radius, position, zoomValue) {
+        var zoom = coverZoom(zoomValue);
+        var scale = Math.max(w / img.naturalWidth, h / img.naturalHeight) * zoom;
         var sw = w / scale;
         var sh = h / scale;
         var anchor = coverPosition(position);
@@ -466,6 +473,7 @@
             poweredBy: textOf(this.root, '.tlqr-powered strong'),
             heroUrl: this.root.dataset.heroUrl || '',
             heroPosition: this.root.dataset.heroPosition || 'center center',
+            heroZoom: coverZoom(this.root.dataset.heroZoom),
             logoUrl: this.root.dataset.logoUrl || ''
         };
     };
@@ -506,7 +514,7 @@
         var heroX = margin, heroY = 60, heroW = cardW, heroH = 650, heroR = 34;
         fillRoundedRect(ctx, heroX, heroY, heroW, heroH, heroR, '#202020');
         if (hero) {
-            drawCoverImage(ctx, hero, heroX, heroY, heroW, heroH, heroR, data.heroPosition);
+            drawCoverImage(ctx, hero, heroX, heroY, heroW, heroH, heroR, data.heroPosition, data.heroZoom);
         } else {
             var fallbackGradient = ctx.createLinearGradient(heroX, heroY, heroX + heroW, heroY + heroH);
             fallbackGradient.addColorStop(0, '#3b3b3b');

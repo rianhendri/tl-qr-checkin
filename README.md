@@ -1,4 +1,4 @@
-# TL QR Check-in 1.1.0
+# TL QR Check-in 1.1.1
 
 Lightweight Elementor widget untuk menampilkan QR Check-in tamu dari URL yang sedang dibuka.
 
@@ -54,9 +54,11 @@ Field berikut mendukung Elementor Dynamic Tags:
 
 ## Posisi foto mempelai
 
-Foto mempelai selalu ditampilkan dengan mode `cover`. Kontrol **Posisi Foto** menyediakan sembilan titik fokus dari kiri atas sampai kanan bawah, dengan default **Tengah (`center center`)**.
+Foto mempelai selalu ditampilkan dengan mode `cover`. Kontrol **Posisi Foto** menyediakan sembilan titik fokus dari kiri atas sampai kanan bawah, dengan default **Tengah (`center center`)**. Untuk foto dengan subjek di bagian bawah, gunakan **Tengah Bawah**.
 
-Posisi yang dipilih digunakan secara konsisten pada kartu di halaman dan pada hasil download PNG 1080 × 1920.
+Kontrol **Zoom Foto** mengatur crop dari `1.00` sampai `2.50`, dengan default `1.35`. Naikkan zoom untuk mengurangi tembok, langit, atau area kosong yang terlalu dominan di sekitar subjek.
+
+Posisi dan zoom yang dipilih digunakan secara konsisten pada kartu di halaman dan pada hasil download PNG 1080 × 1920.
 
 ## Parameter URL tamu
 
