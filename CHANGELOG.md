@@ -2,6 +2,18 @@
 
 Semua perubahan penting TL QR Check-in dicatat di file ini. Versi mengikuti Semantic Versioning.
 
+## Unreleased
+
+### Changed
+
+- Isi QR sekarang menggunakan nilai parameter wajib `?qr=KODE`, bukan seluruh URL halaman.
+- Hasil PNG 1080 × 1920 memakai layout full-bleed tanpa radius, shadow, margin luar, atau kartu QR bersarang.
+- Menampilkan kode QR sebagai teks untuk pemeriksaan manual dan merapikan icon detail pada Canvas.
+
+### Security
+
+- Menolak nilai `qr` kosong, lebih dari 120 karakter, atau yang mengandung spasi/karakter kontrol tanpa meneruskan nilainya ke log atau layanan eksternal.
+
 ## 1.3.0 - 2026-08-30
 
 ### Added

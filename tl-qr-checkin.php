@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: TL QR Check-in
- * Description: Lightweight, read-only Elementor widget that generates a guest QR check-in pass from the current URL entirely in the browser.
+ * Description: Lightweight, read-only Elementor widget that generates a guest QR check-in pass from the qr URL parameter entirely in the browser.
  * Version: 1.3.0
  * Author: TL Invitation
  * Text Domain: tl-qr-checkin

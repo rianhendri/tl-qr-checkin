@@ -21,10 +21,13 @@ WordPress core dapat menyimpan cache hasil pemeriksaan update di site transient 
 
 - Query parameter dimasukkan ke DOM menggunakan `textContent`, bukan HTML injection.
 - Nilai Elementor di-escape dengan API WordPress (`esc_html`, `esc_url`, `esc_attr`).
-- QR berisi full current URL tanpa fragment/hash.
+- Isi QR hanya berasal dari nilai parameter URL `qr`, maksimal 120 karakter, tanpa spasi atau karakter kontrol.
+- Kode QR ditampilkan sebagai teks dengan `textContent` untuk fallback pemeriksaan manual; tidak pernah dimasukkan melalui HTML injection.
+- Nama tamu dan parameter URL lain tidak ikut masuk ke isi QR.
 - QR dibuat setelah user membuka popup sehingga pekerjaan CPU tidak terjadi pada initial page load.
 - PNG dibuat dengan native Canvas API; tidak memakai `html2canvas` atau library screenshot tambahan.
 - Tidak ada `eval`, `new Function`, remote executable script, analytics, tracking, atau external QR API.
+- Nilai `qr` tidak dikirim ke server plugin, GitHub updater, telemetry, atau logger.
 
 ## GitHub updater
 

@@ -86,15 +86,6 @@
         ctx.restore();
     }
 
-    function strokeRoundedRect(ctx, x, y, w, h, r, color, lineWidth) {
-        ctx.save();
-        roundedRectPath(ctx, x, y, w, h, r);
-        ctx.strokeStyle = color;
-        ctx.lineWidth = lineWidth || 1;
-        ctx.stroke();
-        ctx.restore();
-    }
-
     function wrapLines(ctx, text, maxWidth, maxLines) {
         var words = safeString(text, 1000).split(/\s+/).filter(Boolean);
         if (!words.length) return [];
@@ -104,11 +95,12 @@
         function splitLongWord(word) {
             var chunks = [];
             var chunk = '';
-            for (var i = 0; i < word.length; i += 1) {
-                var test = chunk + word.charAt(i);
+            var characters = Array.from(word);
+            for (var i = 0; i < characters.length; i += 1) {
+                var test = chunk + characters[i];
                 if (chunk && ctx.measureText(test).width > maxWidth) {
                     chunks.push(chunk);
-                    chunk = word.charAt(i);
+                    chunk = characters[i];
                 } else {
                     chunk = test;
                 }
@@ -272,60 +264,78 @@
     }
 
     function renderQrCanvas(canvas, qr) {
-        if (!canvas || !qr) return;
+        if (!canvas) return;
         var size = 560;
         canvas.width = size;
         canvas.height = size;
         var ctx = canvas.getContext('2d', { alpha: false });
         if (!ctx) return;
         ctx.imageSmoothingEnabled = false;
-        drawQrMatrix(ctx, qr, 0, 0, size);
+        if (qr) drawQrMatrix(ctx, qr, 0, 0, size);
+        else {
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, size, size);
+        }
     }
 
     function drawIcon(ctx, type, x, y, size, color) {
-        var s = size;
         ctx.save();
         ctx.translate(x, y);
+        ctx.scale(size / 24, size / 24);
         ctx.strokeStyle = color;
-        ctx.fillStyle = 'transparent';
-        ctx.lineWidth = Math.max(2, s * 0.07);
+        ctx.lineWidth = 1.7;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.beginPath();
 
         if (type === 'user') {
-            ctx.arc(s * .5, s * .33, s * .16, 0, Math.PI * 2);
-            ctx.moveTo(s * .2, s * .85);
-            ctx.quadraticCurveTo(s * .25, s * .57, s * .5, s * .57);
-            ctx.quadraticCurveTo(s * .75, s * .57, s * .8, s * .85);
+            ctx.moveTo(15.25, 8);
+            ctx.arc(12, 8, 3.25, 0, Math.PI * 2);
+            ctx.moveTo(5.5, 20);
+            ctx.bezierCurveTo(6.2, 16, 8.3, 14, 12, 14);
+            ctx.bezierCurveTo(15.7, 14, 17.8, 16, 18.5, 20);
         } else if (type === 'pax') {
-            ctx.arc(s * .37, s * .34, s * .13, 0, Math.PI * 2);
-            ctx.moveTo(s * .12, s * .82);
-            ctx.quadraticCurveTo(s * .17, s * .58, s * .37, s * .58);
-            ctx.quadraticCurveTo(s * .58, s * .58, s * .62, s * .82);
-            ctx.moveTo(s * .64, s * .3);
-            ctx.arc(s * .7, s * .3, s * .1, Math.PI, Math.PI * 3);
-            ctx.moveTo(s * .67, s * .59);
-            ctx.quadraticCurveTo(s * .85, s * .57, s * .9, s * .79);
+            ctx.moveTo(11.5, 8);
+            ctx.arc(9, 8, 2.5, 0, Math.PI * 2);
+            ctx.moveTo(18.5, 9);
+            ctx.arc(16.5, 9, 2, 0, Math.PI * 2);
+            ctx.moveTo(3.8, 19);
+            ctx.bezierCurveTo(4.3, 15.4, 6, 13.6, 9, 13.6);
+            ctx.bezierCurveTo(12, 13.6, 13.7, 15.4, 14.2, 19);
+            ctx.moveTo(14.2, 14.3);
+            ctx.bezierCurveTo(17.6, 13.8, 19.5, 15.4, 20, 19);
         } else if (type === 'calendar') {
-            roundedRectPath(ctx, s * .14, s * .2, s * .72, s * .64, s * .08);
-            ctx.moveTo(s * .14, s * .39); ctx.lineTo(s * .86, s * .39);
-            ctx.moveTo(s * .32, s * .12); ctx.lineTo(s * .32, s * .29);
-            ctx.moveTo(s * .68, s * .12); ctx.lineTo(s * .68, s * .29);
+            ctx.moveTo(6, 5.5);
+            ctx.lineTo(18, 5.5);
+            ctx.quadraticCurveTo(20, 5.5, 20, 7.5);
+            ctx.lineTo(20, 17.5);
+            ctx.quadraticCurveTo(20, 19.5, 18, 19.5);
+            ctx.lineTo(6, 19.5);
+            ctx.quadraticCurveTo(4, 19.5, 4, 17.5);
+            ctx.lineTo(4, 7.5);
+            ctx.quadraticCurveTo(4, 5.5, 6, 5.5);
+            ctx.moveTo(8, 3.5); ctx.lineTo(8, 7.5);
+            ctx.moveTo(16, 3.5); ctx.lineTo(16, 7.5);
+            ctx.moveTo(4, 10); ctx.lineTo(20, 10);
         } else if (type === 'clock') {
-            ctx.arc(s * .5, s * .5, s * .34, 0, Math.PI * 2);
-            ctx.moveTo(s * .5, s * .29); ctx.lineTo(s * .5, s * .52); ctx.lineTo(s * .67, s * .62);
+            ctx.moveTo(20, 12);
+            ctx.arc(12, 12, 8, 0, Math.PI * 2);
+            ctx.moveTo(12, 7); ctx.lineTo(12, 12); ctx.lineTo(15, 14);
         } else if (type === 'pin') {
-            ctx.moveTo(s * .5, s * .88);
-            ctx.bezierCurveTo(s * .22, s * .61, s * .22, s * .42, s * .22, s * .38);
-            ctx.arc(s * .5, s * .38, s * .28, Math.PI, 0, false);
-            ctx.bezierCurveTo(s * .78, s * .55, s * .69, s * .7, s * .5, s * .88);
-            ctx.moveTo(s * .5, s * .3); ctx.arc(s * .5, s * .4, s * .1, -Math.PI / 2, Math.PI * 1.5);
+            ctx.moveTo(12, 21);
+            ctx.bezierCurveTo(12, 21, 6, 15.3, 6, 10);
+            ctx.bezierCurveTo(6, 6.7, 8.7, 4, 12, 4);
+            ctx.bezierCurveTo(15.3, 4, 18, 6.7, 18, 10);
+            ctx.bezierCurveTo(18, 15.3, 12, 21, 12, 21);
+            ctx.moveTo(14, 10);
+            ctx.arc(12, 10, 2, 0, Math.PI * 2);
         } else if (type === 'note') {
-            ctx.moveTo(s * .23, s * .14); ctx.lineTo(s * .66, s * .14); ctx.lineTo(s * .82, s * .3); ctx.lineTo(s * .82, s * .86); ctx.lineTo(s * .23, s * .86); ctx.closePath();
-            ctx.moveTo(s * .66, s * .14); ctx.lineTo(s * .66, s * .31); ctx.lineTo(s * .82, s * .31);
-            ctx.moveTo(s * .36, s * .48); ctx.lineTo(s * .68, s * .48);
-            ctx.moveTo(s * .36, s * .63); ctx.lineTo(s * .66, s * .63);
+            ctx.moveTo(6, 3.5); ctx.lineTo(15, 3.5); ctx.lineTo(18, 6.5);
+            ctx.lineTo(18, 20); ctx.lineTo(6, 20); ctx.closePath();
+            ctx.moveTo(14.5, 3.5); ctx.lineTo(14.5, 7); ctx.lineTo(18, 7);
+            ctx.moveTo(9, 11); ctx.lineTo(15, 11);
+            ctx.moveTo(9, 14); ctx.lineTo(15, 14);
+            ctx.moveTo(9, 17); ctx.lineTo(13, 17);
         }
         ctx.stroke();
         ctx.restore();
@@ -337,6 +347,8 @@
         ctx.lineWidth = 5;
         ctx.beginPath();
         ctx.arc(x + 35, y + 34, 26, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
         ctx.arc(x + 67, y + 34, 26, 0, Math.PI * 2);
         ctx.stroke();
         ctx.beginPath();
@@ -398,7 +410,7 @@
         this.status = qs(root, '.tlqr-status');
         this.qrCanvas = qs(root, '.tlqr-qr-canvas');
         this.qr = null;
-        this.targetUrl = '';
+        this.qrCode = '';
         this.closeTimer = 0;
         this.lastFocus = null;
         this.isEditor = root.dataset.editorPreview === '1';
@@ -429,13 +441,14 @@
         }
     };
 
-    TLQRCheckin.prototype.getTargetUrl = function () {
+    TLQRCheckin.prototype.getQrCode = function () {
         try {
-            var url = new URL(window.location.href);
-            url.hash = '';
-            return url.href;
+            var code = new URL(window.location.href).searchParams.get('qr');
+            if (code === null && this.isEditor) code = 'KODEQRNYA';
+            if (code === null || !code || code.length > 120 || /\s|[\u0000-\u001F\u007F]/.test(code)) return '';
+            return code;
         } catch (error) {
-            return window.location.href.split('#')[0];
+            return '';
         }
     };
 
@@ -465,16 +478,29 @@
     };
 
     TLQRCheckin.prototype.makeQr = function () {
+        this.qrCode = this.getQrCode();
+        this.qr = null;
+        var codeNode = qs(this.root, '[data-tlqr-code]');
+        var codeWrap = qs(this.root, '.tlqr-code');
+        if (codeNode) codeNode.textContent = this.qrCode;
+        if (codeWrap) codeWrap.hidden = !this.qrCode;
+        if (!this.qrCode) {
+            renderQrCanvas(this.qrCanvas, null);
+            if (this.downloadButton) this.downloadButton.disabled = true;
+            this.setStatus('Kode QR tidak tersedia. Tambahkan ?qr=KODEQRNYA pada URL (maksimal 120 karakter).');
+            return false;
+        }
         if (!window.TLQRVendor || !window.TLQRVendor.QRCode) {
             throw new Error('QR engine tidak tersedia.');
         }
-        this.targetUrl = this.getTargetUrl();
         var Levels = window.TLQRVendor.QRErrorCorrectLevel;
         var qr = new window.TLQRVendor.QRCode(-1, Levels.M);
-        qr.addData(this.targetUrl);
+        qr.addData(this.qrCode);
         qr.make();
         this.qr = qr;
         renderQrCanvas(this.qrCanvas, qr);
+        if (this.downloadButton) this.downloadButton.disabled = false;
+        return true;
     };
 
     TLQRCheckin.prototype.open = function () {
@@ -486,7 +512,10 @@
         try {
             this.makeQr();
         } catch (error) {
-            this.setStatus('QR tidak dapat dibuat. Periksa panjang URL.');
+            this.qr = null;
+            renderQrCanvas(this.qrCanvas, null);
+            if (this.downloadButton) this.downloadButton.disabled = true;
+            this.setStatus('QR tidak dapat dibuat. Periksa kode QR pada URL.');
             if (window.console && console.error) console.error('[TL QR Check-in]', error);
         }
 
@@ -524,6 +553,7 @@
         var heroImage = qs(this.root, '.tlqr-hero-image');
         var heroStyle = heroImage ? window.getComputedStyle(heroImage) : null;
         return {
+            qrCode: this.qrCode,
             tag: textOf(this.root, '[data-tlqr-tag]'),
             weddingTitle: textOf(this.root, '.tlqr-wedding-title'),
             coupleName: textOf(this.root, '.tlqr-couple-name'),
@@ -544,7 +574,7 @@
     };
 
     TLQRCheckin.prototype.renderDownloadCanvas = async function () {
-        if (!this.qr) this.makeQr();
+        if (!this.qr && !this.makeQr()) throw new Error('Kode QR tidak tersedia.');
 
         var data = this.collectCardData();
         var computed = window.getComputedStyle(this.root);
@@ -588,79 +618,62 @@
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
 
-        ctx.fillStyle = '#f7f7f6';
+        // Full-bleed, square-edged print layout. Only the photo itself is cropped.
+        var heroH = 730;
+        var footerY = 1730;
+        ctx.fillStyle = surface;
         ctx.fillRect(0, 0, 1080, 1920);
-
-        var margin = 60;
-        var cardX = margin, cardY = 60, cardW = 960, cardH = Math.round(cardW * 16 / 9), cardR = 34;
-        var heroX = cardX, heroY = cardY, heroW = cardW, heroH = Math.round(cardH * .38);
-        var mainY = heroY + heroH;
-        var footerH = Math.round(cardH * .10), footerY = cardY + cardH - footerH;
-
-        // One continuous 9:16 card. The outer clip supplies the top and bottom corners.
-        ctx.save();
-        ctx.shadowColor = 'rgba(0,0,0,.10)';
-        ctx.shadowBlur = 34;
-        ctx.shadowOffsetY = 14;
-        fillRoundedRect(ctx, cardX, cardY, cardW, cardH, cardR, surface);
-        ctx.restore();
-
-        ctx.save();
-        roundedRectPath(ctx, cardX, cardY, cardW, cardH, cardR);
-        ctx.clip();
-
-        // Hero.
         ctx.fillStyle = '#202020';
-        ctx.fillRect(heroX, heroY, heroW, heroH);
+        ctx.fillRect(0, 0, 1080, heroH);
         if (hero) {
-            drawFittedImage(ctx, hero, heroX, heroY, heroW, heroH, 0, data.heroPosition, data.heroSize, data.heroZoom);
+            drawFittedImage(ctx, hero, 0, 0, 1080, heroH, 0, data.heroPosition, data.heroSize, data.heroZoom);
         } else {
-            var fallbackGradient = ctx.createLinearGradient(heroX, heroY, heroX + heroW, heroY + heroH);
+            var fallbackGradient = ctx.createLinearGradient(0, 0, 1080, heroH);
             fallbackGradient.addColorStop(0, '#3b3b3b');
             fallbackGradient.addColorStop(1, '#151515');
             ctx.fillStyle = fallbackGradient;
-            ctx.fillRect(heroX, heroY, heroW, heroH);
+            ctx.fillRect(0, 0, 1080, heroH);
         }
 
-        var shade = ctx.createLinearGradient(0, heroY + 180, 0, heroY + heroH);
+        var shade = ctx.createLinearGradient(0, 210, 0, heroH);
         shade.addColorStop(0, 'rgba(0,0,0,0)');
-        shade.addColorStop(1, 'rgba(0,0,0,.72)');
+        shade.addColorStop(1, 'rgba(0,0,0,.76)');
         ctx.fillStyle = shade;
-        ctx.fillRect(heroX, heroY, heroW, heroH);
+        ctx.fillRect(0, 0, 1080, heroH);
 
         if (data.tag) {
             ctx.font = '700 24px Arial, sans-serif';
             var tagWidth = Math.min(330, Math.max(135, ctx.measureText(data.tag.toUpperCase()).width + 72));
-            fillRoundedRect(ctx, heroX + 34, heroY + 34, tagWidth, 58, 29, 'rgba(255,255,255,.94)');
+            fillRoundedRect(ctx, 48, 48, tagWidth, 58, 29, 'rgba(255,255,255,.94)');
             ctx.strokeStyle = accent;
             ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.moveTo(heroX + 56, heroY + 68);
-            ctx.lineTo(heroX + 65, heroY + 55);
-            ctx.lineTo(heroX + 76, heroY + 68);
-            ctx.lineTo(heroX + 88, heroY + 55);
-            ctx.lineTo(heroX + 95, heroY + 68);
+            ctx.moveTo(70, 82);
+            ctx.lineTo(79, 69);
+            ctx.lineTo(90, 82);
+            ctx.lineTo(102, 69);
+            ctx.lineTo(109, 82);
             ctx.stroke();
             ctx.fillStyle = '#4b3d28';
             ctx.textBaseline = 'middle';
-            ctx.fillText(data.tag.toUpperCase(), heroX + 112, heroY + 64);
+            ctx.fillText(data.tag.toUpperCase(), 126, 78, tagWidth - 92);
         }
 
         ctx.textAlign = 'center';
         ctx.textBaseline = 'alphabetic';
         if (data.weddingTitle) {
-            var weddingTitleSize = exportFontSize(textStyles.weddingTitle, 8, 22, 12, 52);
+            var weddingTitleSize = exportFontSize(textStyles.weddingTitle, 8, 27, 14, 52);
             ctx.fillStyle = textStyles.weddingTitle.color;
             setCanvasFont(ctx, textStyles.weddingTitle, weddingTitleSize);
-            ctx.fillText(transformText(data.weddingTitle, textStyles.weddingTitle.textTransform), 540, heroY + 480);
+            ctx.fillText(transformText(data.weddingTitle, textStyles.weddingTitle.textTransform), 540, 515, 920);
         }
         if (data.coupleName) {
-            var coupleNameSize = exportFontSize(textStyles.coupleName, 31, 60, 24, 112);
+            var coupleNameSize = exportFontSize(textStyles.coupleName, 31, 70, 26, 120);
             var coupleLineHeight = Math.round(coupleNameSize * 1.1);
             ctx.fillStyle = textStyles.coupleName.color;
             setCanvasFont(ctx, textStyles.coupleName, coupleNameSize);
-            var coupleLines = wrapLines(ctx, transformText(data.coupleName, textStyles.coupleName.textTransform), 820, 2);
-            var coupleStartY = heroY + 548 - Math.max(0, coupleLines.length - 1) * coupleLineHeight / 2;
+            var coupleLines = wrapLines(ctx, transformText(data.coupleName, textStyles.coupleName.textTransform), 920, 2);
+            var coupleStartY = 610 - Math.max(0, coupleLines.length - 1) * coupleLineHeight / 2;
             for (var c = 0; c < coupleLines.length; c += 1) {
                 ctx.fillText(coupleLines[c], 540, coupleStartY + c * coupleLineHeight);
             }
@@ -669,32 +682,65 @@
             var subtitleSize = exportFontSize(textStyles.subtitle, 8, 22, 12, 46);
             ctx.fillStyle = textStyles.subtitle.color;
             setCanvasFont(ctx, textStyles.subtitle, subtitleSize);
-            ctx.fillText(transformText(data.subtitle, textStyles.subtitle.textTransform), 540, heroY + 625);
+            ctx.fillText(transformText(data.subtitle, textStyles.subtitle.textTransform), 540, 685, 900);
         }
 
-        // Main content stays attached to the hero and footer.
+        // The QR has its own white quiet zone, without a second rounded card.
         ctx.fillStyle = surface;
-        ctx.fillRect(cardX, mainY, cardW, footerY - mainY);
+        ctx.fillRect(0, heroH, 1080, footerY - heroH);
+        ctx.fillStyle = accent;
+        ctx.fillRect(80, 790, 6, 42);
+        ctx.fillStyle = textStyles.detailValue.color;
+        ctx.textAlign = 'left';
+        setCanvasFont(ctx, textStyles.detailValue, 30);
+        ctx.fillText('KARTU CHECK-IN', 112, 822);
+        ctx.strokeStyle = line;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(80, 850);
+        ctx.lineTo(1000, 850);
+        ctx.stroke();
 
-        var qrX = 100, qrY = 775, qrSize = 425;
-        fillRoundedRect(ctx, qrX, qrY, qrSize, qrSize, 24, '#ffffff');
-        strokeRoundedRect(ctx, qrX, qrY, qrSize, qrSize, 24, line, 2);
-        drawQrMatrix(ctx, this.qr, qrX + 14, qrY + 14, qrSize - 28);
+        var qrX = 107, qrY = 878, qrSize = 440;
+        drawQrMatrix(ctx, this.qr, qrX, qrY, qrSize);
 
         ctx.textAlign = 'center';
-        var scanTitleSize = exportFontSize(textStyles.scanTitle, 10, 27, 12, 52);
+        var scanTitleSize = exportFontSize(textStyles.scanTitle, 10, 31, 14, 54);
         ctx.fillStyle = textStyles.scanTitle.color;
         setCanvasFont(ctx, textStyles.scanTitle, scanTitleSize);
-        ctx.fillText(transformText('Scan to check-in', textStyles.scanTitle.textTransform), qrX + qrSize / 2, qrY + qrSize + 54);
-        var scanHelpSize = exportFontSize(textStyles.scanHelp, 7.5, 20, 10, 40);
+        ctx.fillText(transformText(textOf(this.root, '.tlqr-scan-title'), textStyles.scanTitle.textTransform), qrX + qrSize / 2, 1363, 455);
+        var scanHelpSize = exportFontSize(textStyles.scanHelp, 7.5, 21, 10, 42);
         ctx.fillStyle = textStyles.scanHelp.color;
         setCanvasFont(ctx, textStyles.scanHelp, scanHelpSize);
-        drawWrappedText(ctx, transformText('Tunjukkan QR ini di pintu masuk venue.', textStyles.scanHelp.textTransform), qrX + qrSize / 2, qrY + qrSize + 92, 360, Math.round(scanHelpSize * 1.4), 2);
+        drawWrappedText(ctx, transformText(textOf(this.root, '.tlqr-scan-help'), textStyles.scanHelp.textTransform), qrX + qrSize / 2, 1399, 460, Math.round(scanHelpSize * 1.3), 2);
+
+        ctx.strokeStyle = line;
+        ctx.beginPath();
+        ctx.moveTo(108, 1440);
+        ctx.lineTo(547, 1440);
+        ctx.stroke();
+        ctx.fillStyle = textStyles.scanTitle.color;
+        setCanvasFont(ctx, textStyles.scanTitle, 22);
+        ctx.fillText(textOf(this.root, '.tlqr-code-label').toUpperCase(), 327, 1483, 440);
+
+        // Shrink and wrap the whole token; never ellipsize a manual check-in code.
+        var codeSize = 46;
+        var codeLines;
+        do {
+            setCanvasFont(ctx, textStyles.detailValue, codeSize);
+            codeLines = wrapLines(ctx, data.qrCode, 440);
+            if (codeLines.length <= 4) break;
+            codeSize -= 2;
+        } while (codeSize >= 14);
+        ctx.fillStyle = textStyles.detailValue.color;
+        for (var codeLine = 0; codeLine < codeLines.length; codeLine += 1) {
+            ctx.fillText(codeLines[codeLine], 327, 1534 + codeLine * Math.round(codeSize * 1.22), 440);
+        }
 
         // Details.
-        var detailsX = 575;
+        var detailsX = 615;
         var detailsW = 385;
-        var rowY = 773;
+        var rowY = 880;
         var rows = [];
         rows.push({ icon: 'user', label: 'Dear', value: data.guest, max: 2 });
         if (data.pax) rows.push({ icon: 'pax', label: 'Pax', value: data.pax, max: 1 });
@@ -703,16 +749,9 @@
         if (data.venue) rows.push({ icon: 'pin', label: 'Venue', value: data.venue, max: 3 });
         if (data.notes) rows.push({ icon: 'note', label: 'Notes', value: data.notes, max: 3 });
 
-        var availableH = 690;
+        var availableH = 840;
         var rowH = Math.floor(availableH / Math.max(rows.length, 1));
-        rowH = Math.min(124, Math.max(88, rowH));
-
-        ctx.strokeStyle = line;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(550, mainY + 40);
-        ctx.lineTo(550, footerY - 40);
-        ctx.stroke();
+        rowH = Math.min(165, Math.max(108, rowH));
 
         for (var r = 0; r < rows.length; r += 1) {
             var item = rows[r];
@@ -720,63 +759,62 @@
                 ctx.strokeStyle = line;
                 ctx.lineWidth = 2;
                 ctx.beginPath();
-                ctx.moveTo(detailsX, rowY);
-                ctx.lineTo(detailsX + detailsW, rowY);
+                ctx.moveTo(detailsX, rowY - 16);
+                ctx.lineTo(detailsX + detailsW, rowY - 16);
                 ctx.stroke();
             }
-            fillRoundedRect(ctx, detailsX, rowY + 16, 52, 52, 14, '#f5f0e8');
-            drawIcon(ctx, item.icon, detailsX + 8, rowY + 24, 36, accent);
+            drawIcon(ctx, item.icon, detailsX, rowY + 16, 54, accent);
 
             ctx.textAlign = 'left';
-            var detailLabelSize = exportFontSize(textStyles.detailLabel, 7, 18, 10, 36);
+            var detailLabelSize = exportFontSize(textStyles.detailLabel, 7, 22, 12, 38);
             ctx.fillStyle = textStyles.detailLabel.color;
             setCanvasFont(ctx, textStyles.detailLabel, detailLabelSize);
-            ctx.fillText(transformText(item.label, textStyles.detailLabel.textTransform), detailsX + 70, rowY + 37);
-            var detailValueSize = exportFontSize(textStyles.detailValue, 8.4, 24, 12, 50);
+            ctx.fillText(transformText(item.label, textStyles.detailLabel.textTransform), detailsX + 86, rowY + 37);
+            var detailValueSize = Math.min(
+                exportFontSize(textStyles.detailValue, 8.4, 30, 14, 52),
+                Math.max(26, rowH * .25)
+            );
             ctx.fillStyle = textStyles.detailValue.color;
             setCanvasFont(ctx, textStyles.detailValue, detailValueSize);
-            drawWrappedText(ctx, transformText(item.value, textStyles.detailValue.textTransform), detailsX + 70, rowY + 70, detailsW - 76, Math.round(detailValueSize * 1.25), item.max);
+            drawWrappedText(ctx, transformText(item.value, textStyles.detailValue.textTransform), detailsX + 86, rowY + 76, detailsW - 86, Math.round(detailValueSize * 1.2), Math.min(item.max, 2));
             rowY += rowH;
         }
 
-        // Footer remains inside the same outer card, separated by one line.
-        var footerX = cardX, footerW = cardW;
+        // Edge-to-edge print footer.
+        var footerH = 192;
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(footerX, footerY, footerW, footerH);
+        ctx.fillRect(0, footerY, 1080, footerH);
         ctx.strokeStyle = line;
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(footerX, footerY);
-        ctx.lineTo(footerX + footerW, footerY);
+        ctx.moveTo(0, footerY);
+        ctx.lineTo(1080, footerY);
         ctx.stroke();
 
         if (logo) {
-            var logoMaxW = 190, logoMaxH = 86;
+            var logoMaxW = 230, logoMaxH = 100;
             var logoScale = Math.min(logoMaxW / logo.naturalWidth, logoMaxH / logo.naturalHeight, 1);
             var lw = logo.naturalWidth * logoScale;
             var lh = logo.naturalHeight * logoScale;
-            ctx.drawImage(logo, footerX + 38, footerY + (footerH - lh) / 2, lw, lh);
+            ctx.drawImage(logo, 80, footerY + (footerH - lh) / 2, lw, lh);
         } else {
-            drawRings(ctx, footerX + 38, footerY + 54, accent);
+            drawRings(ctx, 80, footerY + 60, accent);
         }
 
         if (data.poweredBy) {
             ctx.textAlign = 'right';
-            var poweredLabelSize = exportFontSize(textStyles.poweredLabel, 7, 19, 10, 38);
+            var poweredLabelSize = exportFontSize(textStyles.poweredLabel, 7, 22, 12, 40);
             ctx.fillStyle = textStyles.poweredLabel.color;
             setCanvasFont(ctx, textStyles.poweredLabel, poweredLabelSize);
-            ctx.fillText(transformText('Powered by', textStyles.poweredLabel.textTransform), footerX + footerW - 42, footerY + 75);
-            var poweredValueSize = exportFontSize(textStyles.poweredValue, 7, 27, 12, 54);
+            ctx.fillText(transformText('Powered by', textStyles.poweredLabel.textTransform), 1000, footerY + 76);
+            var poweredValueSize = exportFontSize(textStyles.poweredValue, 7, 31, 14, 58);
             ctx.fillStyle = textStyles.poweredValue.color;
             setCanvasFont(ctx, textStyles.poweredValue, poweredValueSize);
             var poweredLines = wrapLines(ctx, transformText(data.poweredBy, textStyles.poweredValue.textTransform), 430, 2);
             for (var p = 0; p < poweredLines.length; p += 1) {
-                ctx.fillText(poweredLines[p], footerX + footerW - 42, footerY + 112 + p * Math.round(poweredValueSize * 1.1));
+                ctx.fillText(poweredLines[p], 1000, footerY + 119 + p * Math.round(poweredValueSize * 1.1));
             }
         }
-
-        ctx.restore();
-        strokeRoundedRect(ctx, cardX, cardY, cardW, cardH, cardR, line, 2);
 
         return { canvas: canvas, heroMissing: !!data.heroUrl && !hero, logoMissing: !!data.logoUrl && !logo };
     };
@@ -788,7 +826,7 @@
 
         try {
             this.syncGuestData();
-            this.makeQr();
+            if (!this.makeQr()) return;
             var result = await this.renderDownloadCanvas();
             var blob = await canvasToBlob(result.canvas);
             var guest = textOf(this.root, '[data-tlqr-guest]');
@@ -803,7 +841,7 @@
             this.setStatus('Download gagal. Coba lagi atau periksa CORS foto/logo.');
             if (window.console && console.error) console.error('[TL QR Check-in]', error);
         } finally {
-            this.downloadButton.disabled = false;
+            this.downloadButton.disabled = !this.qr;
         }
     };
 

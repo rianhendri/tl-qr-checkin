@@ -2,7 +2,7 @@
 
 ## Project Scope
 
-TL QR Check-in is a lightweight WordPress plugin that registers an Elementor widget. It reads guest data from the current URL, generates a QR code in the browser, and exports a 1080 x 1920 PNG with the native Canvas API.
+TL QR Check-in is a lightweight WordPress plugin that registers an Elementor widget. It reads guest data and the required `qr` token from the current URL, generates a QR code in the browser, and exports a 1080 x 1920 PNG with the native Canvas API.
 
 Keep the plugin small, predictable, and maintenance-oriented. Do not expand it into a server-side check-in system unless the user explicitly changes the product scope.
 
@@ -58,7 +58,7 @@ A future GitHub updater may make a bounded admin-side update request only when t
 - Preserve `esc_html`, `esc_attr`, and `esc_url` boundaries in templates.
 - Validate enumerated Elementor values with an allowlist.
 - Do not weaken capability checks on administrative notices or future admin operations.
-- The QR contains the current full URL without its fragment. Treat guest names and check-in tokens in that URL as potentially sensitive data.
+- The QR contains only the validated `qr` query parameter (maximum 120 characters, no whitespace/control characters). Treat guest names and check-in tokens in the URL as potentially sensitive data.
 - Never transmit the invitation URL to an update provider, telemetry service, or error logger.
 - Do not add a production dependency without explicit approval and a recorded source, exact version or commit, license, and integrity hash.
 - When vendored code changes, preserve its license and update its provenance and checksum.
@@ -119,7 +119,7 @@ For frontend behavior changes, manually verify the relevant subset:
 - Fixed and inline trigger modes.
 - Multiple widget instances.
 - Missing, malformed, long, and Unicode query values.
-- QR content matches the current URL without the fragment.
+- QR content and printed manual code exactly match the decoded `qr` query value.
 - PNG export remains 1080 x 1920.
 - Same-origin and cross-origin image behavior.
 - Keyboard open, close, Escape, focus restoration, and reduced motion.

@@ -77,8 +77,12 @@ if ( ! defined( 'ABSPATH' ) ) {
                             <div class="tlqr-qr-frame" aria-label="<?php esc_attr_e( 'QR code', 'tl-qr-checkin' ); ?>">
                                 <canvas class="tlqr-qr-canvas" width="560" height="560"></canvas>
                             </div>
-                            <div class="tlqr-scan-title"><?php esc_html_e( 'Scan to check-in', 'tl-qr-checkin' ); ?></div>
-                            <div class="tlqr-scan-help"><?php esc_html_e( 'Tunjukkan QR ini di pintu masuk venue.', 'tl-qr-checkin' ); ?></div>
+                            <div class="tlqr-scan-title"><?php esc_html_e( 'Pindai QR di pintu masuk', 'tl-qr-checkin' ); ?></div>
+                            <div class="tlqr-scan-help"><?php esc_html_e( 'Tunjukkan kartu ini kepada petugas.', 'tl-qr-checkin' ); ?></div>
+                            <div class="tlqr-code" hidden>
+                                <span class="tlqr-code-label"><?php esc_html_e( 'Kode QR', 'tl-qr-checkin' ); ?></span>
+                                <strong data-tlqr-code></strong>
+                            </div>
                         </div>
 
                         <div class="tlqr-details">

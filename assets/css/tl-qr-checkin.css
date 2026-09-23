@@ -384,6 +384,39 @@
     text-align: center;
 }
 
+.tlqr-code {
+    width: 100%;
+    margin-top: 9px;
+    padding-top: 8px;
+    border-top: 1px solid var(--tlqr-line);
+    text-align: center;
+}
+
+.tlqr-code[hidden] {
+    display: none !important;
+}
+
+.tlqr-code-label {
+    display: block;
+    color: var(--tlqr-accent);
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+}
+
+.tlqr-code strong {
+    display: block;
+    margin-top: 3px;
+    color: var(--tlqr-text);
+    font-size: 9px;
+    line-height: 1.25;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+    max-height: 4em;
+    overflow: hidden;
+}
+
 .tlqr-details {
     min-width: 0;
     border-left: 1px solid var(--tlqr-line);

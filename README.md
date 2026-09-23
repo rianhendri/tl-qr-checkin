@@ -1,6 +1,6 @@
 # TL QR Check-in 1.3.0
 
-Lightweight Elementor widget untuk menampilkan QR Check-in tamu dari URL yang sedang dibuka.
+Lightweight Elementor widget untuk menampilkan kartu QR Check-in tamu dari parameter URL `qr`.
 
 ## Prinsip arsitektur
 
@@ -94,7 +94,7 @@ Default:
 Contoh:
 
 ```text
-https://domain.com/rian-yuli/?to=Budi%20Santoso&guest=2&tag=VVIP&checkin=A8F39K2
+https://domain.com/rian-yuli/?to=Budi%20Santoso&guest=2&tag=VVIP&qr=A8F39K2
 ```
 
 Hasil:
@@ -102,17 +102,19 @@ Hasil:
 - Nama: Budi Santoso
 - Pax: 2 Pax
 - Badge: VVIP
-- QR: berisi URL lengkap di atas, termasuk `checkin=A8F39K2`
+- QR dan teks kode manual: `A8F39K2`
 
 Jika `tag` tidak ada atau kosong, badge otomatis disembunyikan.
 
-Plugin tidak perlu mengenali parameter `checkin`; parameter apa pun yang ada di URL otomatis ikut masuk ke isi QR karena QR menggunakan current full URL.
+Parameter `qr` wajib di frontend, maksimal 120 karakter, dan tidak boleh mengandung spasi atau karakter kontrol. Nilainya dipakai apa adanya sebagai isi QR; nama tamu dan parameter URL lain tidak ikut dikodekan. Jika `qr` hilang/tidak valid, area QR dikosongkan dan tombol download dinonaktifkan. Di Elementor editor, widget memakai `KODEQRNYA` sebagai data contoh.
+
+QR dibuat saat popup dibuka dan dibuat ulang saat tombol download ditekan. Seluruh proses tetap berlangsung di browser; plugin ini tidak memvalidasi kode ke server atau mencatat status check-in.
 
 ## Download PNG
 
 Tombol **Download QR** membuat PNG **1080 × 1920 (9:16)** langsung di browser.
 
-Hasil PNG memakai satu kartu utuh: hero, area QR/detail, dan footer saling menyambung dengan garis pemisah seperti preview widget.
+Hasil PNG memakai layout cetak full-bleed tanpa margin, radius luar, shadow, atau kartu tambahan. Hero, area QR/detail, kode QR manual, dan footer memenuhi kanvas dari tepi ke tepi. QR tetap mempunyai quiet zone putih agar mudah dipindai.
 
 Tidak ada file yang di-upload ke Media Library atau disimpan ke server.
 
